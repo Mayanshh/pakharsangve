@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root{
+  --bg: #F3F3F3;
+  --primary-clr: #FF6A13;
+}
+
+@theme {
+  --font-sans: var(--font-jakarta), sans-serif;
+  --font-inter: var(--font-inter), sans-serif;
+}
+
+@keyframes smoothFloat {
+  0%, 100% {
+      transform: translate(0px, 0px);
+  }
+  33% {
+      transform: translate(4px, -6px);
+  }
+  66% {
+      transform: translate(-4px, -3px);
+  }
+}
+
+.animate-smooth-float {
+    animation: smoothFloat 5s ease-in-out infinite;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+::selection {
+  background-color: #ffffff;
+  color: #000000;
+}
