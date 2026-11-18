@@ -91,7 +91,7 @@ export default function ServicesSection() {
                     {service.title}
                   </h3>
                   {/* Lavender/Purple Accent Dot */}
-                  <span className="w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full bg-purple-300/80 shrink-0 mt-2 lg:mt-4" />
+                  <span className="w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full bg-(--primary-clr) shrink-0 mt-2 lg:mt-4" />
                 </div>
 
                 {/* Right Side: Arrow Icon */}
