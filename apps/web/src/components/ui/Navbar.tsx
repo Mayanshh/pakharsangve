@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
@@ -42,12 +43,30 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Blog", href: "/#whatshappening" },
 ];
 
+/*
+ * RESPONSIVE STRATEGY
+ * -------------------
+ * >= 1024px (lg): the original hover-dropdown pill navbar, unchanged.
+ * <  1024px:      the pill is hidden and replaced by a hamburger button that
+ *                 opens a tap-friendly menu with expandable sub-items.
+ * Every `lg:` class on <header> is the original desktop value.
+ */
 export function Navbar() {
+  const pathname = usePathname();
+
+  /* ---------------- desktop (original) ---------------- */
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastItemRef = useRef<NavItem | null>(null);
+
+  /* ---------------- mobile / tablet ---------------- */
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const activeItemData = NAV_ITEMS.find((item) => item.label === activeDropdown);
 
@@ -92,6 +111,93 @@ export function Navbar() {
     { dependencies: [activeDropdown], scope: navRef }
   );
 
+  /* Mobile menu open / close animation (same easing as the desktop panel) */
+  useGSAP(
+    () => {
+      const panel = mobilePanelRef.current;
+      if (!panel) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (mobileOpen) {
+        gsap.to(panel, {
+          height: "auto",
+          autoAlpha: 1,
+          duration: reduce ? 0 : 0.4,
+          ease: "power3.out",
+          overwrite: "auto",
+        });
+        gsap.fromTo(
+          ".m-item",
+          { opacity: 0, y: -6 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: reduce ? 0 : 0.35,
+            ease: "power3.out",
+            stagger: reduce ? 0 : 0.04,
+            overwrite: "auto",
+          }
+        );
+      } else {
+        gsap.to(panel, {
+          height: 0,
+          autoAlpha: 0,
+          duration: reduce ? 0 : 0.3,
+          ease: "power3.inOut",
+          overwrite: "auto",
+        });
+      }
+    },
+    { dependencies: [mobileOpen], scope: mobileRef }
+  );
+
+  /* Close the mobile menu after any route change */
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  /*
+   * While open: close on outside tap, Escape, scrolling, or growing to desktop.
+   * (Closing on scroll also covers same-page hash links: the smooth-scroll
+   * navigator handles those clicks itself, so an onClick here may not fire.)
+   */
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const startY = window.scrollY;
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (mobileRef.current && !mobileRef.current.contains(e.target as Node)) {
+        setMobileOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 12) setMobileOpen(false);
+    };
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onBreakpoint = (e: MediaQueryListEvent) => {
+      if (e.matches) setMobileOpen(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    mq.addEventListener("change", onBreakpoint);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", onScroll);
+      mq.removeEventListener("change", onBreakpoint);
+    };
+  }, [mobileOpen]);
+
   const handleMouseEnter = (label: string, hasSubItems?: boolean) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown(hasSubItems ? label : null);
@@ -101,13 +207,21 @@ export function Navbar() {
     timeoutRef.current = setTimeout(() => setActiveDropdown(null), 200);
   };
 
+  const toggleMobile = () => {
+    if (!mobileOpen) setMobileExpanded(null);
+    setMobileOpen(!mobileOpen);
+  };
+
+  const closeMobile = () => setMobileOpen(false);
+
   return (
-    <header className="fixed top-10 right-0 mr-18 z-50 w-full max-w-3xl px-4 mt-2">
+    <header className="fixed top-3 right-0 z-50 w-full px-3 pointer-events-none sm:top-4 sm:px-4 lg:pointer-events-auto lg:top-10 lg:mr-18 lg:max-w-3xl lg:px-4 lg:mt-2">
+      {/* ============ Desktop / laptop navbar (original, lg and up) ============ */}
       <nav
         ref={navRef}
         onMouseLeave={handleMouseLeave}
         onMouseEnter={() => timeoutRef.current && clearTimeout(timeoutRef.current)}
-        className="overflow-hidden bg-white/80 backdrop-blur-md text-zinc-900 rounded-[2.5rem] shadow-2xl shadow-black/10 "
+        className="hidden lg:block overflow-hidden bg-white/80 backdrop-blur-md text-zinc-900 rounded-[2.5rem] shadow-2xl shadow-black/10 "
       >
         <div className="flex items-stretch w-full gap-2 p-2.5">
           {NAV_ITEMS.map((item) => {
@@ -188,6 +302,106 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+
+      {/* ============ Mobile / tablet menu (below lg) ============ */}
+      <div ref={mobileRef} className="lg:hidden flex flex-col items-end gap-2">
+        <button
+          ref={menuButtonRef}
+          type="button"
+          onClick={toggleMobile}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-menu"
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/80 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10 transition-transform duration-200 active:scale-95"
+        >
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+
+        <div
+          id="mobile-menu"
+          ref={mobilePanelRef}
+          style={{ height: 0, opacity: 0, visibility: "hidden" }}
+          aria-hidden={!mobileOpen}
+          className="pointer-events-auto w-full sm:max-w-sm overflow-hidden rounded-[2rem] bg-white/90 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10"
+        >
+          <div className="p-2.5">
+            <ul className="flex flex-col">
+              {NAV_ITEMS.map((item) => {
+                const hasSub = !!item.subItems;
+                const isExpanded = mobileExpanded === item.label;
+                return (
+                  <li key={item.label} className="m-item">
+                    <div className="flex items-center">
+                      <Link
+                        href={item.href}
+                        onClick={closeMobile}
+                        className="flex-1 min-w-0 rounded-full px-5 py-3.5 text-base font-medium text-zinc-700 transition-colors duration-200 active:bg-zinc-200/60"
+                      >
+                        {item.label}
+                      </Link>
+
+                      {hasSub && (
+                        <button
+                          type="button"
+                          aria-label={`${isExpanded ? "Collapse" : "Expand"} ${item.label} links`}
+                          aria-expanded={isExpanded}
+                          onClick={() =>
+                            setMobileExpanded(isExpanded ? null : item.label)
+                          }
+                          className="mr-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors duration-200 active:bg-zinc-200/60"
+                        >
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-(--primary-clr) text-zinc-900">
+                            <ArrowRight
+                              className={`h-3 w-3 transition-transform duration-300 ease-out ${
+                                isExpanded ? "rotate-90" : ""
+                              }`}
+                            />
+                          </span>
+                        </button>
+                      )}
+                    </div>
+
+                    {hasSub && (
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                          isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                        }`}
+                      >
+                        <ul
+                          aria-hidden={!isExpanded}
+                          className="min-h-0 overflow-hidden"
+                        >
+                          {item.subItems!.map((sub) => (
+                            <li key={sub.label}>
+                              <Link
+                                href={sub.href}
+                                onClick={closeMobile}
+                                tabIndex={isExpanded ? 0 : -1}
+                                className="flex items-center gap-2 rounded-full py-2.5 pl-9 pr-5 text-sm text-zinc-600 transition-colors active:bg-zinc-200/60 active:text-zinc-950"
+                              >
+                                <ArrowRight className="h-3.5 w-3.5 text-zinc-500" />
+                                <span>{sub.label}</span>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            <Link
+              href="/#contact"
+              onClick={closeMobile}
+              className="m-item mt-2 flex w-full items-center justify-center rounded-full bg-(--primary-clr) px-4 py-3.5 text-sm font-medium text-zinc-900 shadow-sm transition-colors duration-200 active:bg-black active:text-(--primary-clr)"
+            >
+              Contact
+            </Link>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

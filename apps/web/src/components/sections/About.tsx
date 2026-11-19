@@ -37,6 +37,18 @@ const TESTIMONIALS = [
   },
 ];
 
+/*
+ * RESPONSIVE STRATEGY
+ * -------------------
+ * Every `lg:` class below is the ORIGINAL desktop/laptop value, so screens
+ * >= 1024px render exactly as before.
+ *
+ * Below lg the two grid columns use `display: contents`, which lets the six
+ * blocks flow as one list that can be re-ordered with `order-*`. That gives
+ * phones the natural reading order:
+ *   "Our latest work" heading -> 4 case studies -> testimonial
+ * (Without it, the heading would appear after the first two cards.)
+ */
 export default function AboutSection() {
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -51,46 +63,46 @@ export default function AboutSection() {
   const currentTestimonial = TESTIMONIALS[activeSlide];
 
   return (
-    <main id="about" className="relative min-h-screen w-full py-16 bg-(--bg) flex flex-col items-center justify-start overflow-x-hidden">
+    <main id="about" className="relative min-h-screen w-full py-12 sm:py-16 bg-(--bg) flex flex-col items-center justify-start overflow-x-hidden">
       {/* Top Editorial Intro Block */}
-      <div className="w-full px-6 md:px-20 flex flex-col items-end justify-start">
-        <p className="text-black w-full lg:max-w-7xl leading-[1.4] text-2xl sm:text-3xl md:text-4xl text-right font-normal">
+      <div className="w-full px-6 md:px-20 flex flex-col items-start md:items-end justify-start">
+        <p className="text-black w-full lg:max-w-7xl leading-[1.4] text-2xl sm:text-3xl md:text-4xl text-left md:text-right font-normal">
           Our team is made up of{" "}
-          <span className="inline-block px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
+          <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             bold creatives
           </span>
           ,{" "}
-          <span className="inline-block px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
+          <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             sharp strategists
           </span>
           , and{" "}
-          <span className="inline-block px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
+          <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             technical pros
           </span>{" "}
           who care deeply about what they do. No egos, no fluff – just hard
           work, smart thinking, and a{" "}
-          <span className="inline-block px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
+          <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             genuine commitment
           </span>{" "}
           to our clients’ success. We treat every brand and budget like it’s our
           own,{" "}
-          <span className="inline-block px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
+          <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             always deliver on promises
           </span>
           , and never lock clients into contracts.
         </p>
 
-        <div className="w-fit h-fit flex items-center justify-center mt-12">
+        <div className="w-fit h-fit flex items-center justify-center mt-8 md:mt-12">
           <CapsuleButton text="About us" href="/about" />
         </div>
       </div>
 
       {/* Full-Width Rounded Black Showcase Section */}
-      <section className="relative mx-auto mt-28 lg:mt-36 w-full max-w-[1800px] bg-black flex flex-col justify-between overflow-hidden rounded-4xl lg:rounded-[3rem] px-6 py-14 sm:px-10 lg:px-16 lg:py-24 text-white">
+      <section className="relative mx-auto mt-16 sm:mt-28 lg:mt-36 w-full max-w-[1800px] bg-black flex flex-col justify-between overflow-hidden rounded-4xl lg:rounded-[3rem] px-6 py-14 sm:px-10 lg:px-16 lg:py-24 text-white">
         {/* 2-Column Staggered Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start w-full">
           {/* Left Column */}
-          <div className="flex flex-col gap-10 lg:gap-16">
+          <div className="contents lg:flex lg:flex-col lg:gap-16">
             <CaseStudyCard
               title="Latakoo"
               description="Latakoo is a specialist video workflow platform helping broadcasters, content creators, and media organisations move content faster and more efficiently."
@@ -112,7 +124,7 @@ export default function AboutSection() {
             />
 
             {/* Testimonial + Inline Pagination Controls (Matches Screenshot 3) */}
-            <div className="flex flex-col justify-between gap-10 pt-8 lg:pt-14 max-w-xl">
+            <div className="order-last lg:order-none flex flex-col justify-between gap-10 pt-2 sm:pt-8 lg:pt-14 max-w-xl">
               <div className="flex flex-col gap-5">
                 <blockquote className="text-3xl sm:text-4xl lg:text-[2.75rem] font-normal tracking-tight leading-[1.15]">
                   {currentTestimonial.quote}
@@ -131,7 +143,7 @@ export default function AboutSection() {
                   type="button"
                   onClick={handlePrev}
                   aria-label="Previous testimonial"
-                  className="w-10 h-10 rounded-full bg-(--primary-clr) hover:bg-[#ffa06a] active:scale-95 text-neutral-950 flex items-center justify-center transition-all cursor-pointer"
+                  className="w-11 h-11 lg:w-10 lg:h-10 rounded-full bg-(--primary-clr) hover:bg-[#ffa06a] active:scale-95 text-neutral-950 flex items-center justify-center transition-all cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4"
@@ -156,7 +168,7 @@ export default function AboutSection() {
                   type="button"
                   onClick={handleNext}
                   aria-label="Next testimonial"
-                  className="w-10 h-10 rounded-full bg-(--primary-clr) hover:bg-[#ffa06a] active:scale-95 text-neutral-950 flex items-center justify-center transition-all cursor-pointer"
+                  className="w-11 h-11 lg:w-10 lg:h-10 rounded-full bg-(--primary-clr) hover:bg-[#ffa06a] active:scale-95 text-neutral-950 flex items-center justify-center transition-all cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4"
@@ -177,9 +189,9 @@ export default function AboutSection() {
           </div>
 
           {/* Right Column */}
-          <div className="flex flex-col gap-10 lg:gap-16">
+          <div className="contents lg:flex lg:flex-col lg:gap-16">
             {/* Header & Intro Block */}
-            <div className="flex flex-col items-start gap-5 max-w-xl pb-4">
+            <div className="order-first lg:order-none flex flex-col items-start gap-5 max-w-xl pb-0 sm:pb-4">
               <div className="flex items-center gap-4">
                 <span className="w-5 h-5 rounded-full bg-white inline-block shrink-0" />
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white">
