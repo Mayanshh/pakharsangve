@@ -9,6 +9,10 @@ import React, {
 } from "react";
 import gsap from "gsap";
 
+// useLayoutEffect warns during server rendering; fall back to useEffect there.
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export interface FloatingItem {
   id: string;
   type: "video" | "pill";
@@ -34,36 +38,52 @@ interface FloatingTextProps {
   floatingItems?: FloatingItem[];
 }
 
+/*
+ * RESPONSIVE POSITIONING
+ * ----------------------
+ * Un-prefixed / sm: classes = phone & tablet layout (percent-based, so it
+ * scales with the section and the items never collide).
+ * `lg:` classes = the ORIGINAL desktop values (what used to apply at 640px+),
+ * so screens >= 1024px render exactly as before.
+ *
+ * If you pass your own `floatingItems`, use the same pattern: mobile
+ * position first, then your desktop position behind `lg:`.
+ */
 const DEFAULT_FLOATING_ITEMS: FloatingItem[] = [
   {
     id: "float-1",
     type: "video",
     videoSrc: "/videos/p.mp4",
-    positionClassName: "top-30 left-[6%] sm:left-[10%] w-44 sm:w-58 aspect-[16/10]",
+    positionClassName:
+      "top-[6%] left-[5%] w-[42%] sm:w-[28%] aspect-[16/10] lg:top-30 lg:left-[10%] lg:w-58",
   },
   {
     id: "float-2",
     type: "pill",
     content: "Decades of experience",
-    positionClassName: "top-35 left-[32%] sm:left-[35%] px-6 py-3",
+    positionClassName:
+      "top-[30%] left-[18%] sm:left-[30%] lg:top-35 lg:left-[35%] lg:px-6 lg:py-3",
   },
   {
     id: "float-3",
     type: "video",
     videoSrc: "/videos/p2.mp4",
-    positionClassName: "top-38 right-[15%] sm:right-[14%] w-40 sm:w-52 aspect-[16/10]",
+    positionClassName:
+      "top-[14%] right-[5%] w-[38%] sm:w-[26%] aspect-[16/10] lg:top-38 lg:right-[14%] lg:w-52",
   },
   {
     id: "float-4",
     type: "pill",
     content: "Clients in 30 countries",
-    positionClassName: "bottom-55 right-[15%] sm:right-[16%] px-6 py-3",
+    positionClassName:
+      "bottom-[8%] right-[5%] sm:right-[12%] lg:bottom-55 lg:right-[16%] lg:px-6 lg:py-3",
   },
   {
     id: "float-5",
     type: "video",
     videoSrc: "/videos/p3.mp4",
-    positionClassName: "bottom-18 left-[20%] sm:left-[35%] w-40 sm:w-58 aspect-[16/10]",
+    positionClassName:
+      "bottom-[22%] left-[6%] w-[40%] sm:w-[28%] aspect-[16/10] lg:bottom-18 lg:left-[35%] lg:w-58",
   },
 ];
 
@@ -115,7 +135,7 @@ export default function FloatingTextSection({
     setRepeatCount((prev) => (prev === needed ? prev : needed));
   }, []);
 
-  useLayoutEffect(() => {
+  useIsoLayoutEffect(() => {
     measure();
   }, [measure, marqueeText, gap, repeatCount]);
 
@@ -177,41 +197,60 @@ export default function FloatingTextSection({
 
   /* ------------------------------------------------------------------ */
   /* 3. Floating motion ONLY for pills (Videos remain static)            */
+  /*    gsap.matchMedia re-creates this when the breakpoint or the       */
+  /*    reduced-motion setting changes. Phones/tablets float at 60%      */
+  /*    amplitude so pills don't bump the screen edge; desktop = 100%.   */
   /* ------------------------------------------------------------------ */
   useEffect(() => {
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReduced) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const ctx = gsap.context(() => {
-      pillItemsRef.current.forEach((el, index) => {
-        if (!el) return;
+    const mm = gsap.matchMedia();
 
-        const amplitudeY = 14 + (index % 3) * 6;
-        const amplitudeX = (index % 2 === 0 ? 1 : -1) * (8 + (index % 3) * 3);
-        const rotate = index % 2 === 0 ? 2 : -2;
-        const duration = 3 + (index % 3) * 0.9;
+    mm.add(
+      {
+        isDesktop: "(min-width: 1024px)",
+        reduceMotion: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { isDesktop, reduceMotion } = context.conditions as {
+          isDesktop: boolean;
+          reduceMotion: boolean;
+        };
+        if (reduceMotion) return;
 
-        gsap.fromTo(
-          el,
-          { x: -amplitudeX, y: -amplitudeY, rotation: -rotate },
-          {
-            x: amplitudeX,
-            y: amplitudeY,
-            rotation: rotate,
-            duration,
-            yoyo: true,
-            repeat: -1,
-            ease: "sine.inOut",
-            delay: -index * 0.7,
-            force3D: true,
-          }
-        );
-      });
-    }, containerRef);
+        const scale = isDesktop ? 1 : 0.6;
 
-    return () => ctx.revert();
+        pillItemsRef.current.forEach((el, index) => {
+          if (!el) return;
+
+          const amplitudeY = (14 + (index % 3) * 6) * scale;
+          const amplitudeX =
+            (index % 2 === 0 ? 1 : -1) * (8 + (index % 3) * 3) * scale;
+          const rotate = index % 2 === 0 ? 2 : -2;
+          const duration = 3 + (index % 3) * 0.9;
+
+          gsap.fromTo(
+            el,
+            { x: -amplitudeX, y: -amplitudeY, rotation: -rotate },
+            {
+              x: amplitudeX,
+              y: amplitudeY,
+              rotation: rotate,
+              duration,
+              yoyo: true,
+              repeat: -1,
+              ease: "sine.inOut",
+              delay: -index * 0.7,
+              force3D: true,
+            }
+          );
+        });
+      },
+      container
+    );
+
+    return () => mm.revert();
   }, [floatingItems]);
 
   const setupVideo = (el: HTMLVideoElement | null) => {
@@ -225,7 +264,7 @@ export default function FloatingTextSection({
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-[70vh] sm:min-h-[80vh] h-screen flex items-center justify-center overflow-hidden bg-(--bg) select-none py-28"
+      className="relative w-full h-[85svh] min-h-128 lg:h-screen lg:min-h-[80vh] flex items-center justify-center overflow-hidden bg-(--bg) select-none py-16 sm:py-20 lg:py-28"
     >
       {/* Floating foreground elements */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">

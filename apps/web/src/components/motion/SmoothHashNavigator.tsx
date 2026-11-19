@@ -489,7 +489,7 @@ export default function SmoothHashNavigator({
     <div
       ref={veilRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[9999] bg-[#050606]/35 opacity-0 will-change-[opacity]"
+      className="pointer-events-none fixed inset-0 z-9999 bg-[#050606]/35 opacity-0 will-change-[opacity]"
     />
   );
 }

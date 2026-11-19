@@ -124,7 +124,7 @@ export default function AboutSection() {
             />
 
             {/* Testimonial + Inline Pagination Controls (Matches Screenshot 3) */}
-            <div className="order-last lg:order-none flex flex-col justify-between gap-10 pt-2 sm:pt-8 lg:pt-14 max-w-xl">
+            <div className="order-last lg:order-0 flex flex-col justify-between gap-10 pt-2 sm:pt-8 lg:pt-14 max-w-xl">
               <div className="flex flex-col gap-5">
                 <blockquote className="text-3xl sm:text-4xl lg:text-[2.75rem] font-normal tracking-tight leading-[1.15]">
                   {currentTestimonial.quote}
@@ -191,7 +191,7 @@ export default function AboutSection() {
           {/* Right Column */}
           <div className="contents lg:flex lg:flex-col lg:gap-16">
             {/* Header & Intro Block */}
-            <div className="order-first lg:order-none flex flex-col items-start gap-5 max-w-xl pb-0 sm:pb-4">
+            <div className="order-first lg:order-0 flex flex-col items-start gap-5 max-w-xl pb-0 sm:pb-4">
               <div className="flex items-center gap-4">
                 <span className="w-5 h-5 rounded-full bg-white inline-block shrink-0" />
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white">

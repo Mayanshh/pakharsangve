@@ -322,7 +322,7 @@ export function Navbar() {
           ref={mobilePanelRef}
           style={{ height: 0, opacity: 0, visibility: "hidden" }}
           aria-hidden={!mobileOpen}
-          className="pointer-events-auto w-full sm:max-w-sm overflow-hidden rounded-[2rem] bg-white/90 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10"
+          className="pointer-events-auto w-full sm:max-w-sm overflow-hidden rounded-4xl bg-white/90 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10"
         >
           <div className="p-2.5">
             <ul className="flex flex-col">
