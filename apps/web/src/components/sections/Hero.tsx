@@ -78,7 +78,7 @@ const CLIENT_LOGOS: MarqueeItem[] = [
 export default function Hero() {
     return (
         <section className="h-fit w-full box-border p-5 flex flex-col items-start py-16 px-20">
-            <h1 className="text-black text-3xl tracking-tight uppercase font-normal h-fit w-full">pakharsangave</h1>
+            <h1 className="text-black text-3xl tracking-tight  h-fit w-full font-semibold">Pakharsangave<span className="text-(--primary-clr) text-5xl">.</span></h1>
             <main className="h-screen w-full lg:mt-4 md:mt-4 pt-20 ">
                 <h2 className="text-black  min-h-fit text-[7.8em] leading-15 whitespace-normal tracking-tight font-semibold">
                     I run {" "}

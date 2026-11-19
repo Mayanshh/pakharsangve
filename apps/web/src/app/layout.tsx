@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans , Inter } from "next/font/google";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import "./globals.css";
 import { Navbar } from "@/components/ui/Navbar";
+import FooterSection from "@/components/sections/FooterSection";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
         <SmoothScrollProvider>
           <Navbar />
           {children}
+          <FooterSection />
         </SmoothScrollProvider>
       </body>
     </html>
