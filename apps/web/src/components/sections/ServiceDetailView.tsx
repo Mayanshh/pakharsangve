@@ -34,7 +34,7 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
-    <main className="relative min-h-screen w-full bg-var(--bg) text-neutral-900 selection:bg-black selection:text-white">
+    <main className="relative min-h-screen w-full bg-(--bg) text-neutral-900 selection:bg-black selection:text-white">
       
       {/* 1. TOP NAVIGATION / BACK BAR */}
       <div className="w-full px-6 sm:px-12 lg:px-20 pt-10 pb-6 flex items-center justify-between">
@@ -53,35 +53,27 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
           </svg>
           <span>Back to Services</span>
         </Link>
-        <span className="text-xs uppercase tracking-[0.25em] font-semibold text-neutral-400">
-          Service Overview
-        </span>
+
       </div>
 
       {/* 2. EDITORIAL HERO SECTION */}
       <section className="px-6 sm:px-12 lg:px-20 pt-6 pb-20">
         <div className="flex flex-col gap-8 max-w-5xl">
-          <div className="inline-flex items-center gap-3 w-fit px-5 py-2 rounded-full border border-neutral-300 bg-white shadow-xs">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: service.accentColor }} />
-            <span className="text-xs font-semibold uppercase tracking-widest text-neutral-800">
-              Specialized Expertise
-            </span>
-          </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-[7rem] font-normal tracking-tight leading-[1.05]">
+          <h1 className="text-5xl sm:text-7xl lg:text-[7rem] text-(--primary-clr) font-normal tracking-tight leading-[1.05]">
             {service.title}
           </h1>
 
-          <p className="text-2xl sm:text-3xl text-neutral-700 font-normal leading-relaxed max-w-4xl">
+          <p className="text-2xl sm:text-3xl text-gray-600 font-normal leading-none max-w-4xl">
             {service.tagline}
           </p>
         </div>
 
         {/* Hero Image Showcase with Duotone Accent Effect */}
-        <div className="relative mt-16 w-full aspect-21/9 min-h-95 sm:min-h-130 rounded-3xl lg:rounded-[2.5rem] overflow-hidden bg-neutral-950 isolate shadow-2xl">
+        <div className="relative mt-16 w-full aspect-21/9 min-h-95 sm:min-h-130 rounded-3xl lg:rounded-lg overflow-hidden bg-neutral-950 isolate shadow-2xl">
           <div 
             className="absolute inset-0 z-10 mix-blend-multiply opacity-60 transition-opacity"
-            style={{ backgroundColor: service.accentColor }}
+            // style={{ backgroundColor: service.accentColor }}
           />
           <Image
             src={service.heroImage}
@@ -89,7 +81,7 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center grayscale contrast-125 scale-105"
+            className="object-cover object-center scale-105"
           />
         </div>
       </section>
@@ -131,18 +123,18 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
       </section>
 
       {/* 5. CORE DELIVERABLES GRID */}
-      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-black text-white rounded-t-[3rem] lg:rounded-t-[4rem]">
+      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-[#121212] text-white rounded-t-[3rem] lg:rounded-t-[4rem]">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
             <div>
-              <span className="text-xs uppercase tracking-[0.25em] font-semibold text-neutral-400">
+              <span className="text-xs uppercase tracking-[0.25em] font-semibold text-gray-400">
                 Scope of Work
               </span>
-              <h2 className="mt-3 text-4xl sm:text-6xl font-normal tracking-tight">
+              <h2 className="mt-3 text-4xl sm:text-6xl font-normal text-lime-300 tracking-tight">
                 Core Deliverables
               </h2>
             </div>
-            <p className="text-neutral-400 max-w-md text-base sm:text-lg">
+            <p className="text-gray-400 max-w-md text-base sm:text-lg">
               Comprehensive assets and frameworks delivered directly into your production pipelines.
             </p>
           </div>
@@ -151,10 +143,10 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
             {service.deliverables.map((item, idx) => (
               <div 
                 key={idx}
-                className="group p-8 sm:p-10 rounded-3xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all duration-300 flex flex-col justify-between gap-8"
+                className="group p-8 sm:p-10 rounded-3xl bg-neutral-800 border border-neutral-800 hover:border-neutral-700 transition-all duration-300 flex flex-col justify-between gap-8"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-mono text-neutral-500">
+                  <span className="text-sm font-mono text-gray-100">
                     0{idx + 1}
                   </span>
                   <span className="w-2.5 h-2.5 rounded-full bg-lime-300 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -245,12 +237,12 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
       </section>
 
       {/* 8. BOTTOM CONVERSION CTA BANNER */}
-      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-lime-300 text-neutral-950 text-center rounded-t-[3rem] lg:rounded-t-[4rem]">
+      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-[#121212] text-neutral-100 text-center rounded-t-[3rem] lg:rounded-t-[4rem]">
         <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
           <h2 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-none">
             Ready to scale your brand?
           </h2>
-          <p className="text-lg sm:text-xl text-neutral-800 max-w-2xl font-normal">
+          <p className="text-lg sm:text-xl text-neutral-300 max-w-2xl font-normal">
             Let’s discuss your project requirements and build a custom roadmap tailored for your business growth.
           </p>
           <div className="pt-4">

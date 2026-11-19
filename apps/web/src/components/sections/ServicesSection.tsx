@@ -57,7 +57,7 @@ export default function ServicesSection() {
   const [activeId, setActiveId] = useState<string>("web-design");
 
   return (
-    <section className="relative w-full py-24 px-6 sm:px-12 lg:px-20 bg-var(--bg) text-black select-none">
+    <section id="services" className="relative w-full py-24 px-6 sm:px-12 lg:px-20 bg-var(--bg) text-black select-none">
       
       {/* Top Pill Tag Header */}
       <div className="mb-16">

@@ -14,9 +14,8 @@ export interface FloatingItem {
   type: "video" | "pill";
   content?: string;
   videoSrc?: string;
-  /** Tailwind positioning & sizing classes (e.g., "top-4 left-[10%] w-48") */
+
   positionClassName: string;
-  /** Optional inline styles for exact custom widths/heights (e.g., { width: "260px" }) */
   style?: React.CSSProperties;
 }
 
@@ -40,31 +39,31 @@ const DEFAULT_FLOATING_ITEMS: FloatingItem[] = [
     id: "float-1",
     type: "video",
     videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4",
-    positionClassName: "top-4 left-[6%] sm:left-[10%] w-44 sm:w-68 aspect-[16/10]",
+    positionClassName: "top-30 left-[6%] sm:left-[10%] w-44 sm:w-58 aspect-[16/10]",
   },
   {
     id: "float-2",
     type: "pill",
     content: "Decades of experience",
-    positionClassName: "top-12 left-[32%] sm:left-[35%] px-6 py-3",
+    positionClassName: "top-35 left-[32%] sm:left-[35%] px-6 py-3",
   },
   {
     id: "float-3",
     type: "video",
     videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-2.mp4",
-    positionClassName: "top-8 right-[15%] sm:right-[14%] w-40 sm:w-68 aspect-[16/10]",
+    positionClassName: "top-38 right-[15%] sm:right-[14%] w-40 sm:w-52 aspect-[16/10]",
   },
   {
     id: "float-4",
     type: "pill",
     content: "Clients in 30 countries",
-    positionClassName: "bottom-35 right-[15%] sm:right-[16%] px-6 py-3",
+    positionClassName: "bottom-55 right-[15%] sm:right-[16%] px-6 py-3",
   },
   {
     id: "float-5",
     type: "video",
     videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4",
-    positionClassName: "bottom-8 left-[20%] sm:left-[35%] w-40 sm:w-68 aspect-[16/10]",
+    positionClassName: "bottom-18 left-[20%] sm:left-[35%] w-40 sm:w-58 aspect-[16/10]",
   },
 ];
 
@@ -226,7 +225,7 @@ export default function FloatingTextSection({
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-[70vh] sm:min-h-[80vh] h-screen flex items-center justify-center overflow-hidden bg-var(--bg) select-none py-28"
+      className="relative w-full min-h-[70vh] sm:min-h-[80vh] h-screen flex items-center justify-center overflow-hidden bg-(--bg) select-none py-28"
     >
       {/* Floating foreground elements */}
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
@@ -289,9 +288,6 @@ export default function FloatingTextSection({
             </span>
           </div>
         ))}
-      </div>
-      <div className="bg-amber-200 w-fit min-w-80 h-18">
-        hieeieeie
       </div>
     </section>
   );

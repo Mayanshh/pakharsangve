@@ -1,0 +1,367 @@
+"use client";
+
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+
+export interface ArticleItem {
+  id: string;
+  dateLabel: string;
+  title: string;
+  imageUrl: string;
+  imageAlt: string;
+  href: string;
+  tags: string[];
+}
+
+export interface WhatsHappeningProps {
+  heading?: string;
+  viewAllLabel?: string;
+  viewAllHref?: string;
+  articles?: ArticleItem[];
+  className?: string;
+}
+
+const DEFAULT_ARTICLES: ArticleItem[] = [
+  {
+    id: "elevate-chromebook-uk",
+    dateLabel: "October. 2026",
+    title: "elevate.io joins Google Chromebook Perks in the UK",
+    imageUrl:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Video editing and creative workflow dashboard interface",
+    href: "#article-elevate-chromebook",
+    tags: ["SEO", "PPC"],
+  },
+  {
+    id: "marino-muse-seo",
+    dateLabel: "July. 2026",
+    title: "Marino appointed as SEO agency for MUSE",
+    imageUrl:
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Editorial outdoor portrait by natural water in greenery",
+    href: "#article-marino-muse",
+    tags: ["SEO"],
+  },
+  {
+    id: "global-search-architecture",
+    dateLabel: "June. 2026",
+    title: "Scaling organic search authority across multi-region markets",
+    imageUrl:
+      "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Evening stadium lights and live broadcast production",
+    href: "#article-global-search",
+    tags: ["SEO", "CONTENT"],
+  },
+  {
+    id: "paid-media-precision",
+    dateLabel: "May. 2026",
+    title: "High-intent acquisition systems built for measurable ROAS",
+    imageUrl:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=85",
+    imageAlt: "Analytics workspace and performance metrics display",
+    href: "#article-paid-media",
+    tags: ["PPC", "ANALYTICS"],
+  },
+];
+
+export default function WhatsHappeningSection({
+  heading = "What’s happening?",
+  viewAllLabel = "View all articles",
+  viewAllHref = "/articles",
+  articles = DEFAULT_ARTICLES,
+  className = "",
+}: WhatsHappeningProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+  const currentOffsetRef = useRef(0);
+  const maxOffsetRef = useRef(0);
+
+  const computeBounds = useCallback(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    const maxScroll = Math.max(0, track.scrollWidth - viewport.clientWidth);
+    maxOffsetRef.current = maxScroll;
+
+    const clamped = Math.min(Math.max(currentOffsetRef.current, -maxScroll), 0);
+    currentOffsetRef.current = clamped;
+
+    gsap.set(track, { x: clamped, force3D: true });
+    setCanScrollNext(Math.abs(clamped) < maxScroll - 4);
+  }, []);
+
+  const animateTrackTo = useCallback((targetX: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const clampedTarget = Math.min(Math.max(targetX, -maxOffsetRef.current), 0);
+    currentOffsetRef.current = clampedTarget;
+
+    gsap.to(track, {
+      x: clampedTarget,
+      duration: 0.72,
+      ease: "power3.out",
+      force3D: true,
+      onComplete: () => {
+        setCanScrollNext(Math.abs(clampedTarget) < maxOffsetRef.current - 4);
+      },
+    });
+  }, []);
+
+  const handleNext = useCallback(() => {
+    const cards = cardRefs.current.filter(Boolean) as HTMLElement[];
+    if (!cards.length) return;
+
+    const nextIdx = (activeIndex + 1) % cards.length;
+    const targetCard = cards[nextIdx];
+
+    // If we're already at the end and wrap around, reset smoothly to start
+    if (Math.abs(currentOffsetRef.current) >= maxOffsetRef.current - 4 && nextIdx === 0) {
+      setActiveIndex(0);
+      animateTrackTo(0);
+      return;
+    }
+
+    const nextOffset = targetCard ? -targetCard.offsetLeft : currentOffsetRef.current - 520;
+    setActiveIndex(nextIdx);
+    animateTrackTo(nextOffset);
+  }, [activeIndex, animateTrackTo]);
+
+  useEffect(() => {
+    computeBounds();
+
+    const ctx = gsap.context(() => {
+      gsap.from(".wh-header-reveal", {
+        y: 22,
+        opacity: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: "power3.out",
+        clearProps: "transform",
+      });
+
+      gsap.from(".wh-card-reveal", {
+        y: 28,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: "power3.out",
+        clearProps: "transform",
+      });
+    }, sectionRef);
+
+    const resizeObserver = new ResizeObserver(() => {
+      computeBounds();
+    });
+
+    if (viewportRef.current) resizeObserver.observe(viewportRef.current);
+    if (trackRef.current) resizeObserver.observe(trackRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+      ctx.revert();
+    };
+  }, [computeBounds, articles.length]);
+
+  const handleCardHover = (index: number, entering: boolean) => {
+    const card = cardRefs.current[index];
+    if (!card) return;
+    const img = card.querySelector<HTMLImageElement>("[data-card-media]");
+    const arrow = card.querySelector<HTMLElement>("[data-read-arrow]");
+
+    if (img) {
+      gsap.to(img, {
+        scale: entering ? 1.04 : 1,
+        duration: 0.65,
+        ease: "power2.out",
+        force3D: true,
+      });
+    }
+
+    if (arrow) {
+      gsap.to(arrow, {
+        x: entering ? 5 : 0,
+        duration: 0.3,
+        ease: "power2.out",
+        force3D: true,
+      });
+    }
+  };
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby="whats-happening-heading"
+      className={`relative w-full h-screen bg-[#070808] text-white py-14 sm:py-20 overflow-hidden select-none ${className}`}
+    >
+      {/* Header Container */}
+      <div className="mx-auto w-full px-5 sm:px-10 lg:px-14 mb-8 sm:mb-10">
+        <div className="wh-header-reveal flex items-center gap-3.5">
+          <span
+            aria-hidden="true"
+            className="inline-block h-3.5 w-3.5 rounded-full bg-white shrink-0"
+          />
+          <h2
+            id="whats-happening-heading"
+            className="text-2xl sm:text-3xl lg:text-[2.1rem] font-normal tracking-tight text-white leading-tight"
+          >
+            {heading}
+          </h2>
+        </div>
+
+        <div className="wh-header-reveal mt-3 pl-7">
+          <a
+            href={viewAllHref}
+            className="group inline-flex items-center gap-2.5 text-sm sm:text-[15px] font-medium text-lime-300 hover:text-lime-600 transition-colors duration-200"
+          >
+            <span>{viewAllLabel}</span>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 12"
+              fill="none"
+              className="w-6 h-3 stroke-current transition-transform duration-300 group-hover:translate-x-1.5"
+            >
+              <path
+                d="M1 6H22.5M22.5 6L17.5 1.5M22.5 6L17.5 10.5"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {/* Carousel Viewport + Floating Next Control */}
+      <div className="relative w-full">
+        <div
+          ref={viewportRef}
+          className="w-full overflow-hidden pl-5 sm:pl-10 lg:pl-14 pr-5 sm:pr-10"
+        >
+          <div
+            ref={trackRef}
+            className="flex items-stretch gap-4 sm:gap-5 will-change-transform"
+          >
+            {articles.map((article, idx) => (
+              <article
+                key={article.id}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
+                onMouseEnter={() => handleCardHover(idx, true)}
+                onMouseLeave={() => handleCardHover(idx, false)}
+                className="wh-card-reveal group relative shrink-0 w-[86vw] sm:w-[48vw] lg:w-[46.5vw] aspect-16/10.5 sm:aspect-16/10 rounded-[20px] sm:rounded-3xl overflow-hidden bg-[#111315] border border-white/6"
+              >
+                {/* Background Image */}
+                <img
+                  src={article.imageUrl}
+                  alt={article.imageAlt}
+                  data-card-media
+                  loading={idx < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                  className="h-full w-full object-cover object-center will-change-transform"
+                />
+
+                {/* Editorial Readability Scrims */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/55 via-black/15 to-black/85"
+                />
+
+                {/* Card Content Overlay */}
+                <div className="relative z-10 flex h-full w-full flex-col justify-between p-5 sm:p-7 lg:p-8">
+                  {/* Top Timestamp */}
+                  <div className="flex items-center justify-between">
+                    <time className="text-xs sm:text-[13px] font-normal tracking-wide text-white/90">
+                      {article.dateLabel}
+                    </time>
+                  </div>
+
+                  {/* Bottom Headline, Read Link & Tag Pills */}
+                  <div className="flex flex-col items-start">
+                    <a
+                      href={article.href}
+                      className="block max-w-136 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 rounded-sm"
+                    >
+                      <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-medium leading-[1.15] tracking-[-0.02em] text-white">
+                        {article.title}
+                      </h3>
+                    </a>
+
+                    <a
+                      href={article.href}
+                      className="mt-3 inline-flex items-center gap-2.5 text-xs sm:text-sm font-normal text-white/85 hover:text-white transition-colors"
+                    >
+                      <span>Read article</span>
+                      <span
+                        data-read-arrow
+                        aria-hidden="true"
+                        className="inline-flex items-center"
+                      >
+                        <svg
+                          viewBox="0 0 24 12"
+                          fill="none"
+                          className="w-6 h-3 stroke-current"
+                        >
+                          <path
+                            d="M1 6H22.5M22.5 6L17.5 1.5M22.5 6L17.5 10.5"
+                            strokeWidth="1.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    </a>
+
+                    {/* Category Pills */}
+                    {article.tags.length > 0 && (
+                      <div className="mt-5 sm:mt-6 flex flex-wrap items-center gap-2">
+                        {article.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center justify-center rounded-full border border-white/30 bg-black/35 backdrop-blur-xs px-3.5 py-1 text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.08em] text-white/90"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Floating Mint-Green Next Button */}
+        <button
+          type="button"
+          onClick={handleNext}
+          aria-label="Next article"
+          data-can-scroll={canScrollNext}
+          className="hidden sm:flex items-center justify-center absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 z-30 h-11 w-11 lg:h-12 lg:w-12 rounded-full bg-lime-300 hover:bg-lime-600 active:scale-95 text-[#070808] shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 20 20"
+            fill="none"
+            className="w-5 h-5 stroke-current"
+          >
+            <path
+              d="M4.5 10H15.5M15.5 10L11 5.5M15.5 10L11 14.5"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </section>
+  );
+}
