@@ -22,7 +22,7 @@ export const SERVICES: Record<string, ServiceData> = {
       "A great brand isn't just a logo—it's the gut feeling customers get before they even read your headline. We craft cohesive verbal and visual identities designed to command authority, build trust, and differentiate you in crowded markets.",
     subItems: ["Brand Strategy", "Visual Identity", "Guidelines", "Messaging"],
     heroImage:
-      "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+      "/images/img1.jpg",
     accentColor: "#d8b4fe",
     metrics: [
       { value: "3.4x", label: "Brand Recall Lift" },
@@ -106,7 +106,7 @@ export const SERVICES: Record<string, ServiceData> = {
       "Website Development",
     ],
     heroImage:
-      "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+      "/images/img2.jpg",
     accentColor: "#bef264",
     metrics: [
       { value: "99+", label: "Lighthouse Score" },
@@ -185,7 +185,7 @@ export const SERVICES: Record<string, ServiceData> = {
       "Organic traffic is your most sustainable compounding asset. We audit, restructure, and optimize your technical architecture and content authority to rank at the top of search engine results pages for commercial keywords.",
     subItems: ["Technical SEO", "Content Architecture", "Keyword Strategy", "Performance Audits"],
     heroImage:
-      "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+      "/images/img3.jpg",
     accentColor: "#60a5fa",
     metrics: [
       { value: "3.8x", label: "Organic Traffic Growth" },
@@ -231,7 +231,7 @@ export const SERVICES: Record<string, ServiceData> = {
       "Stop burning ad spend on unqualified clicks. We architect hyper-targeted Google Ads and Meta acquisition funnels backed by meticulous attribution modeling and conversion rate optimization.",
     subItems: ["Google Ads", "Meta Ads", "Retargeting Funnels", "Conversion Tracking"],
     heroImage:
-      "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+      "/images/img4.jpg",
     accentColor: "#f43f5e",
     metrics: [
       { value: "4.5x", label: "Average ROAS" },

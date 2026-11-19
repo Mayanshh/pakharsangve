@@ -38,7 +38,7 @@ const DEFAULT_FLOATING_ITEMS: FloatingItem[] = [
   {
     id: "float-1",
     type: "video",
-    videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4",
+    videoSrc: "/videos/p.mp4",
     positionClassName: "top-30 left-[6%] sm:left-[10%] w-44 sm:w-58 aspect-[16/10]",
   },
   {
@@ -50,7 +50,7 @@ const DEFAULT_FLOATING_ITEMS: FloatingItem[] = [
   {
     id: "float-3",
     type: "video",
-    videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-2.mp4",
+    videoSrc: "/videos/p2.mp4",
     positionClassName: "top-38 right-[15%] sm:right-[14%] w-40 sm:w-52 aspect-[16/10]",
   },
   {
@@ -62,7 +62,7 @@ const DEFAULT_FLOATING_ITEMS: FloatingItem[] = [
   {
     id: "float-5",
     type: "video",
-    videoSrc: "https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4",
+    videoSrc: "/videos/p3.mp4",
     positionClassName: "bottom-18 left-[20%] sm:left-[35%] w-40 sm:w-58 aspect-[16/10]",
   },
 ];

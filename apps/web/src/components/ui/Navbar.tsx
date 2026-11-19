@@ -20,34 +20,26 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     label: "Services",
-    href: "/services",
+    href: "/#services",
     subItems: [
-      { label: "Branding", href: "/services/branding" },
-      { label: "Web Design", href: "/services/web-design" },
-      { label: "SEO", href: "/services/seo" },
-      { label: "PPC", href: "/services/ppc" },
-      { label: "Video", href: "/services/video" },
+      { label: "Branding", href: "/#branding" },
+      { label: "Web Design", href: "/#web-design" },
+      { label: "SEO", href: "/#seo" },
+      { label: "PPC", href: "/#ppc" },
     ],
   },
   {
     label: "Work",
-    href: "/work",
+    href: "/case-studies",
     subItems: [
-      { label: "Case Studies", href: "/work/case-studies" },
-      { label: "Portfolio", href: "/work/portfolio" },
-      { label: "Client Results", href: "/work/results" },
+      { label: "Case Studies", href: "/case-studies" },
     ],
   },
   {
     label: "About",
-    href: "/about",
-    subItems: [
-      { label: "Our Story", href: "/about/story" },
-      { label: "Team", href: "/about/team" },
-      { label: "Careers", href: "/about/careers" },
-    ],
+    href: "/#about",
   },
-  { label: "Blog", href: "/blog" },
+  { label: "Blog", href: "/#whatshappening" },
 ];
 
 export function Navbar() {
@@ -164,7 +156,7 @@ export function Navbar() {
             className="flex-1 min-w-0"
           >
             <Link
-              href="/contact"
+              href="/#contact"
               className="flex w-full items-center justify-center rounded-full bg-(--primary-clr) hover:bg-black hover:text-(--primary-clr) px-4 py-3.5 text-sm font-medium text-zinc-900 shadow-sm transition-colors duration-200"
             >
               Contact

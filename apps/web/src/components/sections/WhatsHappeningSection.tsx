@@ -27,7 +27,7 @@ const DEFAULT_ARTICLES: ArticleItem[] = [
     dateLabel: "October. 2026",
     title: "elevate.io joins Google Chromebook Perks in the UK",
     imageUrl:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=85",
+      "/images/img6.jpg",
     imageAlt: "Video editing and creative workflow dashboard interface",
     href: "#article-elevate-chromebook",
     tags: ["SEO", "PPC"],
@@ -37,7 +37,7 @@ const DEFAULT_ARTICLES: ArticleItem[] = [
     dateLabel: "July. 2026",
     title: "Marino appointed as SEO agency for MUSE",
     imageUrl:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85",
+      "/images/img7.jpg",
     imageAlt: "Editorial outdoor portrait by natural water in greenery",
     href: "#article-marino-muse",
     tags: ["SEO"],
@@ -47,7 +47,7 @@ const DEFAULT_ARTICLES: ArticleItem[] = [
     dateLabel: "June. 2026",
     title: "Scaling organic search authority across multi-region markets",
     imageUrl:
-      "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=1400&q=85",
+      "/images/img8.jpg",
     imageAlt: "Evening stadium lights and live broadcast production",
     href: "#article-global-search",
     tags: ["SEO", "CONTENT"],
@@ -57,7 +57,7 @@ const DEFAULT_ARTICLES: ArticleItem[] = [
     dateLabel: "May. 2026",
     title: "High-intent acquisition systems built for measurable ROAS",
     imageUrl:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=85",
+      "/images/img9.jpg",
     imageAlt: "Analytics workspace and performance metrics display",
     href: "#article-paid-media",
     tags: ["PPC", "ANALYTICS"],
@@ -196,6 +196,7 @@ export default function WhatsHappeningSection({
 
   return (
     <section
+      id="whatshappening"
       ref={sectionRef}
       aria-labelledby="whats-happening-heading"
       className={`relative w-full h-screen bg-[#070808] text-white py-14 sm:py-20 overflow-hidden select-none ${className}`}

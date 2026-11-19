@@ -61,21 +61,21 @@ const DEFAULT_CASE_STUDY: CaseStudyData = {
       id: "mock-left",
       slot: "left",
       imageUrl:
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=85",
+        "/images/img5.jpg",
       imageAlt: "Blackbird mobile workflow screen preview",
     },
     {
       id: "mock-center",
       slot: "center",
       imageUrl:
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=85",
+        "/images/img7.jpg",
       imageAlt: "Blackbird plc cloud video technology mobile experience",
     },
     {
       id: "mock-right",
       slot: "right",
       imageUrl:
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=85",
+        "/images/img9.jpg",
       imageAlt: "Blackbird cloud efficiency mobile comparison screen",
     },
   ],
@@ -134,7 +134,7 @@ function PhoneFrame({
           alt={mockup.imageAlt}
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-55"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-100"
         />
 
         {/* Dark Readability Scrim */}

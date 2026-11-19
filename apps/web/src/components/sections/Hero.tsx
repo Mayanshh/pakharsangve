@@ -90,7 +90,7 @@ export default function Hero() {
                             playsInline
                             className="h-16 w-28 sm:h-24 sm:w-40 lg:h-30 lg:w-55 object-cover object-center rounded-2xl"
                         >
-                            <source src="https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4" type="video/mp4" />
+                            <source src="/videos/p.mp4" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </span>{" "} your Ads
@@ -104,7 +104,7 @@ export default function Hero() {
                             playsInline
                             className="h-16 w-28 sm:h-24 sm:w-40 lg:h-30 lg:w-55 object-cover object-center rounded-2xl"
                         >
-                            <source src="https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-2.mp4" type="video/mp4" />
+                            <source src="/videos/p2.mp4" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </span>{" "} business.   
@@ -119,7 +119,7 @@ export default function Hero() {
                             playsInline
                             className="h-16 w-28 sm:h-24 sm:w-40 lg:h-30 lg:w-55 object-cover object-center rounded-2xl"
                         >
-                            <source src="https://marino.co.uk/wp-content/uploads/2026/06/Toni-video-1.mp4" type="video/mp4" />
+                            <source src="/videos/p3.mp4" type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </span>{" "}

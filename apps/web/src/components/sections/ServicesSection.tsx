@@ -20,7 +20,7 @@ const SERVICES_DATA: ServiceItem[] = [
     title: "Branding",
     description: "Distinctive brands built with clarity, character, and lasting commercial impact.",
     subItems: ["Brand Strategy", "Visual Identity", "Guidelines", "Messaging"],
-    imageSrc: "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+    imageSrc: "/images/img1.jpg",
     imageAlt: "Branding preview",
     href: "/services/branding",
   },
@@ -29,7 +29,7 @@ const SERVICES_DATA: ServiceItem[] = [
     title: "Web Design",
     description: "Beautifully built websites designed to engage, convert, and perform at scale.",
     subItems: ["UX & UI Design", "Conversion-Focused Design", "Landing Pages", "Website Development"],
-    imageSrc: "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+    imageSrc: "/images/img2.jpg",
     imageAlt: "Web Design preview",
     href: "/services/web-design",
   },
@@ -38,7 +38,7 @@ const SERVICES_DATA: ServiceItem[] = [
     title: "SEO & Growth",
     description: "Data-driven organic search strategies engineered to capture high-intent traffic.",
     subItems: ["Technical SEO", "Content Architecture", "Keyword Strategy", "Performance Audits"],
-    imageSrc: "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+    imageSrc: "/images/img3.jpg",
     imageAlt: "SEO preview",
     href: "/services/seo",
   },
@@ -47,7 +47,7 @@ const SERVICES_DATA: ServiceItem[] = [
     title: "PPC Advertising",
     description: "High-ROI paid acquisition campaigns meticulously managed to maximize profitable scale.",
     subItems: ["Google Ads", "Meta Ads", "Retargeting Funnels", "Conversion Tracking"],
-    imageSrc: "https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg",
+    imageSrc: "/images/img4.jpg",
     imageAlt: "PPC preview",
     href: "/services/ppc",
   },
@@ -57,7 +57,7 @@ export default function ServicesSection() {
   const [activeId, setActiveId] = useState<string>("web-design");
 
   return (
-    <section id="services" className="relative w-full py-24 px-6 sm:px-12 lg:px-20 bg-var(--bg) text-black select-none">
+    <section id="services" className="scroll-mt-5 relative w-full py-24 px-6 sm:px-12 lg:px-20 bg-var(--bg) text-black select-none">
       
       {/* Top Pill Tag Header */}
       <div className="mb-16">
@@ -77,6 +77,7 @@ export default function ServicesSection() {
 
           return (
             <Link
+              id={service.id}
               key={service.id}
               href={service.href}
               onMouseEnter={() => setActiveId(service.id)}

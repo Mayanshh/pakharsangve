@@ -163,6 +163,7 @@ export default function FooterSection({
 
   return (
     <footer
+      id="contact"
       ref={footerRef}
       className={`w-full bg-[#050606] text-white pt-14 sm:pt-20 pb-10 sm:pb-12 overflow-hidden ${className}`}
     >

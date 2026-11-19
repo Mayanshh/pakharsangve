@@ -51,7 +51,7 @@ export default function AboutSection() {
   const currentTestimonial = TESTIMONIALS[activeSlide];
 
   return (
-    <main className="relative min-h-screen w-full py-16 bg-var(--bg) flex flex-col items-center justify-start overflow-x-hidden">
+    <main id="about" className="relative min-h-screen w-full py-16 bg-(--bg) flex flex-col items-center justify-start overflow-x-hidden">
       {/* Top Editorial Intro Block */}
       <div className="w-full px-6 md:px-20 flex flex-col items-end justify-start">
         <p className="text-black w-full lg:max-w-7xl leading-[1.4] text-2xl sm:text-3xl md:text-4xl text-right font-normal">
@@ -95,9 +95,9 @@ export default function AboutSection() {
               title="Latakoo"
               description="Latakoo is a specialist video workflow platform helping broadcasters, content creators, and media organisations move content faster and more efficiently."
               tags={["Branding", "Web Design", "SEO", "PPC"]}
-              imageSrc="https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg"
+              imageSrc="/images/img1.jpg"
               href="/work/latakoo"
-              hoverColor="#ffa06a"
+              hoverColor="#f3f3f37e"
               hoverTextColor="#0a0a0a"
             />
 
@@ -105,9 +105,9 @@ export default function AboutSection() {
               title="Vislink"
               description="Vislink is a global technology leader in the capture, delivery, and management of high-quality live video communications."
               tags={["Branding", "Web Design", "SEO", "PPC", "Video"]}
-              imageSrc="https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg"
+              imageSrc="/images/img2.jpg"
               href="/work/vislink"
-              hoverColor="#ffa06a"
+              hoverColor="#f3f3f37e"
               hoverTextColor="#0a0a0a"
             />
 
@@ -212,9 +212,9 @@ export default function AboutSection() {
               title="WR Partners"
               description="WR Partners are a leading firm of accountants, auditors, business advisors, and tax specialists, with five locations and a team of more..."
               tags={["Branding", "Web Design", "SEO", "PPC", "Video"]}
-              imageSrc="https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg"
+              imageSrc="/images/img3.jpg"
               href="/work/wr-partners"
-              hoverColor="#d8f999"
+              hoverColor="#f3f3f37e"
               hoverTextColor="#0a0a0a"
             />
 
@@ -222,9 +222,9 @@ export default function AboutSection() {
               title="Office Insight"
               description="Office Insight creates inspiring workplace interiors, combining strategic interior design with commercial office fit-outs."
               tags={["Web Design", "SEO", "PPC"]}
-              imageSrc="https://cdn.pixabay.com/photo/2026/10/25/20/48/20-48-41-341_1280.jpg"
+              imageSrc="/images/img4.jpg"
               href="/work/office-insight"
-              hoverColor="#d8f999"
+              hoverColor="#f3f3f37e"
               hoverTextColor="#0a0a0a"
             />
           </div>
