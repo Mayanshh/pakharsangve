@@ -40,7 +40,7 @@ const NAV_ITEMS: NavItem[] = [
     label: "About",
     href: "/#about",
   },
-  { label: "Blog", href: "/#whatshappening" },
+  { label: "Blog", href: "/blog" },
 ];
 
 /*
