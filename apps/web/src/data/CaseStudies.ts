@@ -4,7 +4,7 @@ export type CaseStudyTemplateId = 1 | 2 | 3;
  * GLOBAL TEMPLATE SWITCH
  * Change this single value (1, 2, or 3) to apply that template across ALL case study detail pages at once.
  */
-export const ACTIVE_CASE_STUDY_TEMPLATE: CaseStudyTemplateId = 1;
+export const ACTIVE_CASE_STUDY_TEMPLATE: CaseStudyTemplateId = 2;
 
 export interface CaseStudyMetric {
   label: string;
