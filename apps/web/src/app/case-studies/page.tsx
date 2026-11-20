@@ -63,12 +63,12 @@ function BentoCard({
 
         {/* Top Floating Pills */}
         <div className="absolute top-4 left-4 right-4 flex items-center justify-between gap-2 z-10">
-          <span className="px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider bg-black/65 text-white backdrop-blur-md border border-white/15">
+          <span className="px-5 py-4 rounded-full text-[11px] font-mono uppercase tracking-wider bg-white/50 backdrop-blur-md text-black border border-white/15">
             {String(index + 1).padStart(2, "0")} • {study.category}
           </span>
 
           {primaryMetric && (
-            <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-tight bg-lime-300 text-neutral-950 shadow-md">
+            <span className="px-5 py-4 rounded-full text-xs font-semibold tracking-tight bg-lime-300/60 backdrop-blur-md text-neutral-950 shadow-md">
               {primaryMetric.value} {primaryMetric.label}
             </span>
           )}
@@ -78,21 +78,23 @@ function BentoCard({
       {/* Card Body */}
       <div className="p-6 sm:p-8 flex flex-col justify-between flex-1 gap-5">
         <div className="flex flex-col gap-2.5">
-          <div className="flex items-center justify-between text-xs font-mono uppercase tracking-widest opacity-65">
-            <span>{study.client}</span>
-            <span>{study.year}</span>
-          </div>
+
 
           <h2
-            className={`text-2xl sm:text-3xl font-medium tracking-tight leading-tight ${
+            className={`text-2xl max-w-5xl h-fit sm:text-5xl font-medium tracking-tighter leading-tighter ${
               isDark || isAccent ? "text-white" : "text-neutral-900"
             }`}
           >
             {study.title}
           </h2>
 
-          <p
-            className={`text-sm sm:text-base leading-relaxed line-clamp-2 ${
+
+            <div className="flex items-center justify-between text-xs font-mono uppercase tracking-widest opacity-65">
+            <span>{study.client}</span>
+            <span>{study.year}</span>
+          </div>
+                    <p
+            className={`text-sm mt-5 sm:text-base leading-relaxed line-clamp-2 ${
               isDark || isAccent ? "text-neutral-300" : "text-neutral-600"
             }`}
           >
@@ -130,7 +132,7 @@ export default function CaseStudiesIndexPage() {
             >
               ← Back to Home
             </Link>
-            <h1 className="text-5xl sm:text-7xl lg:text-[6.5rem] text-(--primary-clr) font-normal tracking-tight leading-[1.02]">
+            <h1 className="text-5xl sm:text-7xl lg:text-[6.5rem] text-(--primary-clr) font-semibold tracking-tighter leading-none">
               Selected Case Studies
             </h1>
           </div>

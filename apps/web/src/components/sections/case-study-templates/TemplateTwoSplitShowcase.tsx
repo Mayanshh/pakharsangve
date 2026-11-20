@@ -282,12 +282,12 @@ export default function TemplateTwoSplitShowcase({ caseStudy }: TemplateProps) {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-20 px-6 sm:px-12 lg:px-20 bg-[#121212] text-white text-center rounded-t-[3rem]">
-        <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
+      <section className="relative py-20 px-6 sm:px-12 lg:px-20 bg-(--bg) text-black text-left rounded-t-[3rem]">
+        <div className="max-w-6xl  flex flex-col items-start gap-6">
+          <h2 className="text-3xl sm:text-5xl lg:text-8xl font-semibold tracking-tight">
             {caseStudy.cta.heading}
           </h2>
-          <p className="text-base sm:text-lg text-neutral-300 max-w-xl">
+          <p className="text-base sm:text-lg text-neutral-600 max-w-xl">
             {caseStudy.cta.description}
           </p>
           <div className="pt-2">

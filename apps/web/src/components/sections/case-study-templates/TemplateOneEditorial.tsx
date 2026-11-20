@@ -271,15 +271,15 @@ export default function TemplateOneEditorial({ caseStudy }: TemplateProps) {
       </section>
 
       {/* 8. BOTTOM CONVERSION CTA BANNER */}
-      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-[#121212] text-neutral-100 text-center rounded-t-[3rem] lg:rounded-t-[4rem]">
-        <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-none">
+      <section className="relative py-20 px-6 sm:px-12 lg:px-20 bg-(--bg) text-black text-left rounded-t-[3rem]">
+        <div className="max-w-6xl  flex flex-col items-start gap-6">
+          <h2 className="text-3xl sm:text-5xl lg:text-8xl font-semibold tracking-tight">
             {caseStudy.cta.heading}
           </h2>
-          <p className="text-lg sm:text-xl text-neutral-300 max-w-2xl font-normal">
+          <p className="text-base sm:text-lg text-neutral-600 max-w-xl">
             {caseStudy.cta.description}
           </p>
-          <div className="pt-4">
+          <div className="pt-2">
             <CapsuleButton
               text={caseStudy.cta.buttonText}
               href={caseStudy.cta.href}
