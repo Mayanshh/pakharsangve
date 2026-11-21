@@ -20,6 +20,11 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
+    label: "About",
+    href: "/#about",
+  },
+  { label: "Learn", href: "/learn" },
+  {
     label: "Services",
     href: "/#services",
     subItems: [
@@ -35,10 +40,6 @@ const NAV_ITEMS: NavItem[] = [
     subItems: [
       { label: "Case Studies", href: "/case-studies" },
     ],
-  },
-  {
-    label: "About",
-    href: "/#about",
   },
   { label: "Blog", href: "/blog" },
 ];
