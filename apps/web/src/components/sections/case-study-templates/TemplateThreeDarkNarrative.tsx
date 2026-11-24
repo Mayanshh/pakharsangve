@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import CapsuleButton from "@/components/ui/Button";
-import type { CaseStudy } from "@/data/CaseStudies";
+import { CASE_STUDIES, type CaseStudy } from "@/data/CaseStudies";
 
 interface TemplateProps {
   caseStudy: CaseStudy;
@@ -14,6 +13,10 @@ export default function TemplateThreeDarkNarrative({
   caseStudy,
 }: TemplateProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const otherCaseStudies = CASE_STUDIES.filter(
+    (item) => item.slug !== caseStudy.slug
+  ).slice(0, 3);
 
   return (
     <main className="relative min-h-screen w-full bg-[#121212] text-neutral-100 selection:bg-lime-300 selection:text-black">
@@ -219,23 +222,41 @@ export default function TemplateThreeDarkNarrative({
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="relative py-20 px-6 sm:px-12 lg:px-20 bg-(--bg) text-black text-left rounded-t-[3rem]">
-        <div className="max-w-6xl  flex flex-col items-start gap-6">
-          <h2 className="text-3xl sm:text-5xl lg:text-8xl font-semibold tracking-tight">
-            {caseStudy.cta.heading}
-          </h2>
-          <p className="text-base sm:text-lg text-neutral-600 max-w-xl">
-            {caseStudy.cta.description}
-          </p>
-          <div className="pt-2">
-            <CapsuleButton
-              text={caseStudy.cta.buttonText}
-              href={caseStudy.cta.href}
-            />
+      {/* Other Case Studies */}
+      {otherCaseStudies.length > 0 && (
+        <section className="py-24 px-6 sm:px-12 lg:px-20 bg-neutral-950 text-white border-t border-neutral-800 rounded-t-[3rem] lg:rounded-t-[4rem]">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl sm:text-6xl font-normal tracking-tight text-lime-300 mb-14">
+              Explore other case studies
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {otherCaseStudies.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/case-studies/${item.slug}`}
+                  className="group flex flex-col gap-5"
+                >
+                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-neutral-900">
+                    <Image
+                      src={item.heroImage}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                    />
+                  </div>
+                  <p className="text-sm text-neutral-400">
+                    {item.category} · {item.year}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-normal tracking-tight leading-snug">
+                    {item.title}
+                  </h3>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import BlogIndexView from "@/components/sections/BlogIndexView";
+import BlogIndexView from "@/components/sections/hero-slides/BlogIndexView";
 
 export const metadata: Metadata = {
   title: "Journal | Pakharsangave",

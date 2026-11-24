@@ -3,6 +3,7 @@
 import { useState } from "react";
 import CapsuleButton from "@/components/ui/Button";
 import CaseStudyCard from "@/components/ui/CaseStudyCard";
+import { CASE_STUDIES } from "@/data/CaseStudies";
 
 const TESTIMONIALS = [
   {
@@ -51,6 +52,7 @@ const TESTIMONIALS = [
  */
 export default function AboutSection() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const topFourCaseStudies = CASE_STUDIES.slice(0, 4);
 
   const handlePrev = () => {
     setActiveSlide((prev) => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1));
@@ -103,25 +105,29 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start w-full">
           {/* Left Column */}
           <div className="contents lg:flex lg:flex-col lg:gap-16">
-            <CaseStudyCard
-              title="Latakoo"
-              description="Latakoo is a specialist video workflow platform helping broadcasters, content creators, and media organisations move content faster and more efficiently."
-              tags={["Branding", "Web Design", "SEO", "PPC"]}
-              imageSrc="/images/img1.jpg"
-              href="/work/latakoo"
-              hoverColor="#f3f3f37e"
-              hoverTextColor="#0a0a0a"
-            />
+            {topFourCaseStudies[0] && (
+              <CaseStudyCard
+                title={topFourCaseStudies[0].title}
+                description={topFourCaseStudies[0].summary}
+                tags={[topFourCaseStudies[0].category]}
+                imageSrc={topFourCaseStudies[0].heroImage}
+                href={`/case-studies/${topFourCaseStudies[0].slug}`}
+                hoverColor="#f3f3f37e"
+                hoverTextColor="#0a0a0a"
+              />
+            )}
 
-            <CaseStudyCard
-              title="Vislink"
-              description="Vislink is a global technology leader in the capture, delivery, and management of high-quality live video communications."
-              tags={["Branding", "Web Design", "SEO", "PPC", "Video"]}
-              imageSrc="/images/img2.jpg"
-              href="/work/vislink"
-              hoverColor="#f3f3f37e"
-              hoverTextColor="#0a0a0a"
-            />
+            {topFourCaseStudies[1] && (
+              <CaseStudyCard
+                title={topFourCaseStudies[1].title}
+                description={topFourCaseStudies[1].summary}
+                tags={[topFourCaseStudies[1].category]}
+                imageSrc={topFourCaseStudies[1].heroImage}
+                href={`/case-studies/${topFourCaseStudies[1].slug}`}
+                hoverColor="#f3f3f37e"
+                hoverTextColor="#0a0a0a"
+              />
+            )}
 
             {/* Testimonial + Inline Pagination Controls (Matches Screenshot 3) */}
             <div className="order-last lg:order-0 flex flex-col justify-between gap-10 pt-2 sm:pt-8 lg:pt-14 max-w-xl">
@@ -203,7 +209,7 @@ export default function AboutSection() {
                 brands that want serious growth.
               </p>
               <a
-                href="/work"
+                href="/case-studies"
                 className="group inline-flex items-center gap-3 text-base font-medium text-lime-300 hover:text-lime-100 transition-colors mt-1"
               >
                 <span>View all work</span>
@@ -220,25 +226,29 @@ export default function AboutSection() {
               </a>
             </div>
 
-            <CaseStudyCard
-              title="WR Partners"
-              description="WR Partners are a leading firm of accountants, auditors, business advisors, and tax specialists, with five locations and a team of more..."
-              tags={["Branding", "Web Design", "SEO", "PPC", "Video"]}
-              imageSrc="/images/img3.jpg"
-              href="/work/wr-partners"
-              hoverColor="#f3f3f37e"
-              hoverTextColor="#0a0a0a"
-            />
+            {topFourCaseStudies[2] && (
+              <CaseStudyCard
+                title={topFourCaseStudies[2].title}
+                description={topFourCaseStudies[2].summary}
+                tags={[topFourCaseStudies[2].category]}
+                imageSrc={topFourCaseStudies[2].heroImage}
+                href={`/case-studies/${topFourCaseStudies[2].slug}`}
+                hoverColor="#f3f3f37e"
+                hoverTextColor="#0a0a0a"
+              />
+            )}
 
-            <CaseStudyCard
-              title="Office Insight"
-              description="Office Insight creates inspiring workplace interiors, combining strategic interior design with commercial office fit-outs."
-              tags={["Web Design", "SEO", "PPC"]}
-              imageSrc="/images/img4.jpg"
-              href="/work/office-insight"
-              hoverColor="#f3f3f37e"
-              hoverTextColor="#0a0a0a"
-            />
+            {topFourCaseStudies[3] && (
+              <CaseStudyCard
+                title={topFourCaseStudies[3].title}
+                description={topFourCaseStudies[3].summary}
+                tags={[topFourCaseStudies[3].category]}
+                imageSrc={topFourCaseStudies[3].heroImage}
+                href={`/case-studies/${topFourCaseStudies[3].slug}`}
+                hoverColor="#f3f3f37e"
+                hoverTextColor="#0a0a0a"
+              />
+            )}
           </div>
         </div>
       </section>

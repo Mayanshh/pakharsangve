@@ -2,13 +2,23 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { SERVICES } from "@/data/Services";
+import { PRODUCTS } from "@/data/Products";
+import { CASE_STUDIES } from "@/data/CaseStudies";
 
 interface SubItem {
   label: string;
+  href: string;
+}
+
+interface FeaturedPreview {
+  title: string;
+  image: string;
   href: string;
 }
 
@@ -16,14 +26,43 @@ interface NavItem {
   label: string;
   href: string;
   subItems?: SubItem[];
+  featured?: FeaturedPreview[];
 }
+
+
+
+const services = Object.values(SERVICES)
+const products = Object.values(PRODUCTS)
+const caseStudies = Object.values(CASE_STUDIES)
+
 
 const NAV_ITEMS: NavItem[] = [
   {
     label: "About",
     href: "/#about",
   },
-  { label: "Learn", href: "/learn" },
+  {
+    label: "Resources",
+    href: "/resources",
+    subItems: [
+      { label: "Open Vault", href: "/learn" },
+      { label: "Pro Playbooks", href: "/learn" },
+      { label: "Month in a Nutshell", href: "/resources/month-in-a-nutshell" },
+      { label: "Blogs", href: "/blog" },
+    ],
+    featured: [
+      {
+        title: "How A Catchy Line Started A Cultural Conversation",
+        image: products[0].previews[0].src,
+        href: "/learn",
+      },
+      {
+        title: "Sharpest Moment Marketing Breakdown & Strategy",
+        image: products[0].previews[1].src,
+        href: "/learn",
+      },
+    ],
+  },
   {
     label: "Services",
     href: "/#services",
@@ -33,29 +72,42 @@ const NAV_ITEMS: NavItem[] = [
       { label: "SEO", href: "/#seo" },
       { label: "PPC", href: "/#ppc" },
     ],
-  },
-  {
-    label: "Work",
-    href: "/case-studies",
-    subItems: [
-      { label: "Case Studies", href: "/case-studies" },
+    featured: [
+      {
+        title: "Distinctive brands built with clarity.",
+        image: services[0].heroImage,
+        href: "/services/branding",
+      },
+      {
+        title: "Sharpest Moment Marketing Breakdown & Strategy",
+        image: services[1].heroImage,
+        href: "/services/ppc",
+      },
     ],
   },
-  { label: "Blog", href: "/blog" },
+    {
+    label: "Work",
+    href: "/case-studies",
+    subItems: [{ label: "Case Studies", href: "/case-studies" }],
+    featured: [
+      {
+        title: "Distinctive brands built with clarity.",
+        image: caseStudies[0].heroImage,
+        href: `/case-studies/${caseStudies[0].slug}`,
+      },
+      {
+        title: "Sharpest Moment Marketing Breakdown & Strategy",
+        image: caseStudies[1].heroImage,
+        href: `/case-studies/${caseStudies[1].slug}`,
+      },
+    ],
+  },
 ];
 
-/*
- * RESPONSIVE STRATEGY
- * -------------------
- * >= 1024px (lg): the original hover-dropdown pill navbar, unchanged.
- * <  1024px:      the pill is hidden and replaced by a hamburger button that
- *                 opens a tap-friendly menu with expandable sub-items.
- * Every `lg:` class on <header> is the original desktop value.
- */
 export function Navbar() {
   const pathname = usePathname();
 
-  /* ---------------- desktop (original) ---------------- */
+  /* ---------------- desktop ---------------- */
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -70,16 +122,25 @@ export function Navbar() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const activeItemData = NAV_ITEMS.find((item) => item.label === activeDropdown);
+  const hasOpenDesktopPanel = !!activeItemData?.subItems;
 
-  if (activeItemData?.subItems) lastItemRef.current = activeItemData;
-  const panelData = activeItemData?.subItems ? activeItemData : lastItemRef.current;
+  if (activeItemData?.subItems) {
+    lastItemRef.current = activeItemData;
+  }
+  const panelData = hasOpenDesktopPanel ? activeItemData : lastItemRef.current;
+
+  const clearCloseTimeout = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
 
   useGSAP(
     () => {
       if (!panelRef.current) return;
-      const isOpen = !!activeItemData?.subItems;
 
-      if (isOpen) {
+      if (hasOpenDesktopPanel) {
         gsap.to(panelRef.current, {
           height: "auto",
           opacity: 1,
@@ -109,10 +170,9 @@ export function Navbar() {
         });
       }
     },
-    { dependencies: [activeDropdown], scope: navRef }
+    { dependencies: [hasOpenDesktopPanel, activeDropdown], scope: navRef }
   );
 
-  /* Mobile menu open / close animation (same easing as the desktop panel) */
   useGSAP(
     () => {
       const panel = mobilePanelRef.current;
@@ -152,16 +212,11 @@ export function Navbar() {
     { dependencies: [mobileOpen], scope: mobileRef }
   );
 
-  /* Close the mobile menu after any route change */
   useEffect(() => {
     setMobileOpen(false);
+    setActiveDropdown(null);
   }, [pathname]);
 
-  /*
-   * While open: close on outside tap, Escape, scrolling, or growing to desktop.
-   * (Closing on scroll also covers same-page hash links: the smooth-scroll
-   * navigator handles those clicks itself, so an onClick here may not fire.)
-   */
   useEffect(() => {
     if (!mobileOpen) return;
 
@@ -196,33 +251,36 @@ export function Navbar() {
       document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", onScroll);
       mq.removeEventListener("change", onBreakpoint);
+      clearCloseTimeout();
     };
   }, [mobileOpen]);
 
   const handleMouseEnter = (label: string, hasSubItems?: boolean) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    clearCloseTimeout();
     setActiveDropdown(hasSubItems ? label : null);
   };
 
   const handleMouseLeave = () => {
+    clearCloseTimeout();
     timeoutRef.current = setTimeout(() => setActiveDropdown(null), 200);
   };
 
   const toggleMobile = () => {
     if (!mobileOpen) setMobileExpanded(null);
-    setMobileOpen(!mobileOpen);
+    setMobileOpen((prev) => !prev);
   };
 
   const closeMobile = () => setMobileOpen(false);
 
   return (
     <header className="fixed top-3 right-0 z-50 w-full px-3 pointer-events-none sm:top-4 sm:px-4 lg:pointer-events-auto lg:top-10 lg:mr-18 lg:max-w-3xl lg:px-4 lg:mt-2">
-      {/* ============ Desktop / laptop navbar (original, lg and up) ============ */}
+      {/* ============ Desktop / laptop navbar (lg and up) ============ */}
       <nav
         ref={navRef}
+        aria-label="Primary"
         onMouseLeave={handleMouseLeave}
-        onMouseEnter={() => timeoutRef.current && clearTimeout(timeoutRef.current)}
-        className="hidden lg:block overflow-hidden bg-white/80 backdrop-blur-md text-zinc-900 rounded-[2.5rem] shadow-2xl shadow-black/10 "
+        onMouseEnter={clearCloseTimeout}
+        className="hidden lg:block overflow-hidden bg-white/80 backdrop-blur-md text-zinc-900 rounded-[2.5rem] shadow-2xl shadow-black/10"
       >
         <div className="flex items-stretch w-full gap-2 p-2.5">
           {NAV_ITEMS.map((item) => {
@@ -235,6 +293,7 @@ export function Navbar() {
               >
                 <Link
                   href={item.href}
+                  onClick={() => setActiveDropdown(null)}
                   className={`group/btn relative flex w-full items-center justify-center overflow-hidden rounded-full px-4 py-3.5 text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? "bg-zinc-200/70 text-zinc-900"
@@ -272,6 +331,7 @@ export function Navbar() {
           >
             <Link
               href="/#contact"
+              onClick={() => setActiveDropdown(null)}
               className="flex w-full items-center justify-center rounded-full bg-(--primary-clr) hover:bg-black hover:text-(--primary-clr) px-4 py-3.5 text-sm font-medium text-zinc-900 shadow-sm transition-colors duration-200"
             >
               Contact
@@ -282,24 +342,70 @@ export function Navbar() {
         <div
           ref={panelRef}
           style={{ height: 0, opacity: 0 }}
-          aria-hidden={!activeItemData}
+          aria-hidden={!hasOpenDesktopPanel}
           className="overflow-hidden bg-zinc-900/6"
         >
           <div className="border-t border-zinc-200/60 px-8 py-6">
-            <ul className="flex flex-wrap items-center gap-x-8 gap-y-3">
-              {panelData?.subItems?.map((sub) => (
-                <li key={sub.label} className="sub-item">
-                  <Link
-                    href={sub.href}
-                    tabIndex={activeItemData ? 0 : -1}
-                    className="group/sub flex items-center gap-2 text-sm text-zinc-700 transition-colors hover:text-zinc-950"
-                  >
-                    <ArrowRight className="h-3.5 w-3.5 text-zinc-500 transition-all group-hover/sub:translate-x-0.5 group-hover/sub:text-(--primary-clr)" />
-                    <span>{sub.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {panelData?.featured ? (
+              <div className="grid grid-cols-12 gap-6 items-start">
+                <ul className="col-span-4 flex flex-col gap-3.5 pt-1">
+                  {panelData.subItems?.map((sub) => (
+                    <li key={sub.label} className="sub-item">
+                      <Link
+                        href={sub.href}
+                        onClick={() => setActiveDropdown(null)}
+                        tabIndex={hasOpenDesktopPanel ? 0 : -1}
+                        className="group/sub flex items-center gap-2 text-base font-medium text-zinc-800 transition-colors hover:text-zinc-950"
+                      >
+                        <ArrowRight className="h-3.5 w-3.5 text-zinc-500 transition-all group-hover/sub:translate-x-0.5 group-hover/sub:text-(--primary-clr)" />
+                        <span>{sub.label}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="col-span-8 grid grid-cols-2 gap-4">
+                  {panelData.featured.map((card) => (
+                    <Link
+                      key={card.title}
+                      href={card.href}
+                      onClick={() => setActiveDropdown(null)}
+                      tabIndex={hasOpenDesktopPanel ? 0 : -1}
+                      className="sub-item group/card flex flex-col gap-2"
+                    >
+                      <div className="relative aspect-16/10 w-full overflow-hidden rounded-2xl bg-zinc-200">
+                        <Image
+                          src={card.image}
+                          alt={card.title}
+                          fill
+                          sizes="240px"
+                          className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-105"
+                        />
+                      </div>
+                      <p className="text-xs font-medium leading-snug text-zinc-800 group-hover/card:text-black line-clamp-2">
+                        {card.title}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <ul className="flex flex-wrap items-center gap-x-8 gap-y-3">
+                {panelData?.subItems?.map((sub) => (
+                  <li key={sub.label} className="sub-item">
+                    <Link
+                      href={sub.href}
+                      onClick={() => setActiveDropdown(null)}
+                      tabIndex={hasOpenDesktopPanel ? 0 : -1}
+                      className="group/sub flex items-center gap-2 text-sm text-zinc-700 transition-colors hover:text-zinc-950"
+                    >
+                      <ArrowRight className="h-3.5 w-3.5 text-zinc-500 transition-all group-hover/sub:translate-x-0.5 group-hover/sub:text-(--primary-clr)" />
+                      <span>{sub.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </nav>

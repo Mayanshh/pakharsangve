@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import CapsuleButton from "@/components/ui/Button";
+import { SERVICES } from "@/data/Services";
 
 interface Deliverable {
   title: string;
@@ -18,6 +18,7 @@ interface ProcessStep {
 
 interface ServiceDetailProps {
   service: {
+    slug?: string;
     title: string;
     tagline: string;
     description: string;
@@ -32,6 +33,10 @@ interface ServiceDetailProps {
 
 export default function ServiceDetailView({ service }: ServiceDetailProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const otherServices = Object.values(SERVICES).filter(
+    (s) => s.slug !== service.slug && s.title !== service.title
+  );
 
   return (
     <main className="relative min-h-screen w-full bg-(--bg) text-neutral-900 selection:bg-black selection:text-white">
@@ -236,20 +241,41 @@ export default function ServiceDetailView({ service }: ServiceDetailProps) {
         </div>
       </section>
 
-      {/* 8. BOTTOM CONVERSION CTA BANNER */}
-      <section className="py-24 px-6 sm:px-12 lg:px-20 bg-[#121212] text-neutral-100 text-center rounded-t-[3rem] lg:rounded-t-[4rem]">
-        <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-none">
-            Ready to scale your brand?
-          </h2>
-          <p className="text-lg sm:text-xl text-neutral-300 max-w-2xl font-normal">
-            Let’s discuss your project requirements and build a custom roadmap tailored for your business growth.
-          </p>
-          <div className="pt-4">
-            <CapsuleButton text="Book a Discovery Call" href="/contact" />
+      {/* 8. OTHER SERVICES CARDS */}
+      {otherServices.length > 0 && (
+        <section className="py-24 px-6 sm:px-12 lg:px-20 bg-[#121212] text-white rounded-t-[3rem] lg:rounded-t-[4rem]">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl sm:text-6xl font-normal tracking-tight text-lime-300 mb-14">
+              Explore other services
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {otherServices.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/services/${item.slug}`}
+                  className="group flex flex-col gap-5"
+                >
+                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden bg-neutral-900">
+                    <Image
+                      src={item.heroImage}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                    />
+                  </div>
+                  <p className="text-sm text-neutral-400">
+                    {item.subItems.slice(0, 2).join(" · ")}
+                  </p>
+                  <h3 className="text-xl sm:text-2xl font-normal tracking-tight leading-snug">
+                    {item.title}
+                  </h3>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
     </main>
   );
