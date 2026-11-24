@@ -1,10 +1,4 @@
-"use client";
-
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import Marquee, { MarqueeItem } from "@/components/ui/Marquee";
-import PortraitHeroSlide from "@/components/sections/hero-slides/PortraitHeroSlide";
-import EditorialHeroSlide from "@/components/sections/hero-slides/EditorialHeroSlide";
-import VslHeroSlide from "@/components/sections/hero-slides/VslHeroSlide";
 
 const CLIENT_LOGOS: MarqueeItem[] = [
   {
@@ -81,181 +75,91 @@ const CLIENT_LOGOS: MarqueeItem[] = [
   },
 ];
 
-const SLIDE_TABS = [
-  { id: 0, label: "Portrait" },
-  { id: 1, label: "Ads Hero" },
-  { id: 2, label: "VSL" },
-] as const;
-
-const SLIDE_DURATION_MS = 6500;
-
+/*
+ * RESPONSIVE STRATEGY
+ * -------------------
+ * Everything un-prefixed (or sm:/md:) is the new phone/tablet layout.
+ * Everything prefixed with `lg:` is the ORIGINAL desktop/laptop value,
+ * copied over exactly, so screens >= 1024px render as before.
+ */
 export default function Hero() {
-  // 0 = Portrait Hero, 1 = Current Ads Hero, 2 = VSL Hero
-  const [activeSlide, setActiveSlide] = useState<number>(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isInView, setIsInView] = useState(true);
-  const [isWatchingVsl, setIsWatchingVsl] = useState(false);
-  const [timerProgress, setTimerProgress] = useState(0);
+    return (
+        <section className="h-fit w-full box-border flex flex-col items-start px-5 py-8 sm:px-8 sm:py-10 md:px-12 lg:px-20 lg:py-16">
+            <h1 className="text-black text-3xl tracking-tight  h-fit w-full font-semibold">Pakharsangave<span className="text-(--primary-clr) text-5xl">.</span></h1>
+            <main className="h-auto w-full pt-10 pb-6 sm:pt-12 md:mt-4 lg:mt-4 lg:h-screen lg:pt-20 lg:pb-0">
+                <h2 className="text-black min-h-fit text-[10vw] leading-[1.15] lg:text-[7.8em] lg:leading-15 whitespace-normal tracking-tight font-semibold">
+                    I run {" "}
+                    <span className="inline-flex items-center align-middle mx-1.5 my-1 sm:mx-2 lg:mx-3 lg:my-2">
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="h-[0.95em] w-[1.75em] lg:h-30 lg:w-55 object-cover object-center rounded-xl lg:rounded-2xl"
+                        >
+                            <source src="/videos/p.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </span>{" "} your Ads
+                    like I own 
+                    <span className="text-(--primary-clr) font-extrabold rounded-3xl overflow-hidden "> 50% </span> of your {" "}
+                    <span className="inline-flex items-center align-middle mx-1.5 my-1 sm:mx-2 lg:mx-3 lg:my-2">
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="h-[0.95em] w-[1.75em] lg:h-30 lg:w-55 object-cover object-center rounded-xl lg:rounded-2xl"
+                        >
+                            <source src="/videos/p2.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </span>{" "} business.   
+                </h2>
+                <p className="text-base sm:text-lg lg:text-[1.25rem] text-black w-full max-w-xl mt-6 lg:mt-0 lg:max-w-none lg:w-150 relative left-0 top-0 lg:left-150 lg:-top-5 leading-[1.35]"><span className="font-semibold">Indian-born, globally trusted </span> – we’ve generated <span className="font-semibold">£100M+ in client revenue </span> and manage £250K in monthly ad spend, backed by a world-class team built to improve the bottom line.</p>
+                {" "}
+                    <span className="inline-flex items-center align-middle relative mt-5 top-0 left-0 lg:mt-0 lg:-top-10 lg:left-10">
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="h-24 w-44 sm:h-28 sm:w-52 lg:h-30 lg:w-55 object-cover object-center rounded-2xl"
+                        >
+                            <source src="/videos/p3.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </span>{" "}
 
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const touchStartX = useRef<number | null>(null);
+                <div className="animate-smooth-float relative w-fit mt-5 px-6 py-3 lg:w-auto lg:mt-0 lg:px-10 bg-lime-300 rounded-full lg:absolute lg:top-74 lg:right-30 z-10 flex items-center justify-center shadow-[0_0_50px_rgba(190,242,100,0.5)] backdrop-blur-md cursor-pointer transition-transform duration-300 hover:scale-105">
+                <h3 className="text-black text-lg font-semibold tracking-tight">
+                    100M+ Client Revenue
+                </h3>
+            </div>
+                <div className="animate-smooth-float relative w-fit mt-4 ml-auto px-6 py-3 lg:w-auto lg:mt-0 lg:ml-0 lg:px-10 bg-lime-300 rounded-full lg:absolute lg:top-150 lg:left-120 z-10 flex items-center justify-center shadow-[0_0_50px_rgba(190,242,100,0.5)] backdrop-blur-md cursor-pointer transition-transform duration-300 hover:scale-105">
+                <h3 className="text-black text-lg font-semibold tracking-tight">
+                    World Class Team
+                </h3>
+            </div>
+            <div className="w-full flex flex-col items-start mt-8 lg:mt-0 lg:items-end justify-between">
+                <a href="mailto:hello@pakharsangave.com" className="text-black font-semibold text-md hover:opacity-70 transition-opacity duration-200">
+                hello@pakharsangave.com
+            </a>
+            <a href="tel:+91999999998" className=" text-black text-md hover:opacity-70 transition-opacity duration-200">
+                +91 9876678901
+            </a>
+            </div>
 
-  // Auto-slides gently for visitors who don't click; pauses when reading/hovering/watching VSL/scrolled away
-  const isPaused = isHovered || !isInView || isWatchingVsl;
-
-  const goToSlide = useCallback((index: number) => {
-    const normalized = (index + 3) % 3;
-    setActiveSlide(normalized);
-    setTimerProgress(0);
-  }, []);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsInView(entry.isIntersecting && entry.intersectionRatio > 0.35);
-      },
-      { threshold: [0, 0.35, 0.7] }
+            </main>
+            <div className="w-full mt-6 lg:mt-0 overflow-hidden lg:overflow-visible">
+                <Marquee
+                  items={CLIENT_LOGOS}
+                  speed={24}
+                  direction="left"
+                  slowOnHover={true}
+                  fadeEdges={true}
+                />
+            </div>
+        </section>
     );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (isPaused) return;
-
-    const stepMs = 50;
-    const interval = window.setInterval(() => {
-      setTimerProgress((prev) => {
-        const next = prev + (stepMs / SLIDE_DURATION_MS) * 100;
-        if (next >= 100) {
-          setActiveSlide((curr) => (curr + 1) % 3);
-          return 0;
-        }
-        return next;
-      });
-    }, stepMs);
-
-    return () => window.clearInterval(interval);
-  }, [isPaused, activeSlide]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isInView) return;
-      if (e.key === "ArrowRight") goToSlide(activeSlide + 1);
-      if (e.key === "ArrowLeft") goToSlide(activeSlide - 1);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSlide, goToSlide, isInView]);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(deltaX) > 48) {
-      goToSlide(deltaX < 0 ? activeSlide + 1 : activeSlide - 1);
-    }
-  };
-
-  return (
-    <section
-      ref={sectionRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      className="h-fit w-full box-border flex flex-col items-start px-5 py-6 sm:px-8 sm:py-8 md:px-12 lg:px-20 lg:py-10"
-    >
-      <div className="w-full flex items-center justify-between mb-4 lg:mb-5">
-        <h1 className="text-black text-3xl tracking-tight h-fit font-semibold">
-          Pakharsangave<span className="text-(--primary-clr) text-5xl">.</span>
-        </h1>
-      </div>
-
-      {/* Locked Identical Dimensions Across All 3 Slides — Zero Layout Shift */}
-      <main className="relative w-full h-[82vh] min-h-[580px] max-h-[840px] rounded-3xl overflow-hidden shadow-sm">
-        <div
-          className="flex w-full h-full will-change-transform"
-          style={{
-            transform: `translate3d(-${activeSlide * 100}%, 0, 0)`,
-            transition: "transform 850ms cubic-bezier(0.22, 1, 0.36, 1)",
-          }}
-        >
-          <div className="w-full h-full shrink-0">
-            <PortraitHeroSlide onExploreNext={() => goToSlide(1)} />
-          </div>
-
-          <div className="w-full h-full shrink-0">
-            <EditorialHeroSlide />
-          </div>
-
-          <div className="w-full h-full shrink-0">
-            <VslHeroSlide
-              isActive={activeSlide === 2}
-              onWatchStateChange={setIsWatchingVsl}
-              onVideoEnded={() => goToSlide(0)}
-            />
-          </div>
-        </div>
-
-        {/* Floating Dock Scoped Strictly Inside Hero */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex justify-center pointer-events-auto">
-          <nav
-            aria-label="Hero showcase slides"
-            className="inline-flex items-center gap-1 p-1.5 rounded-full bg-neutral-950/85 backdrop-blur-xl border border-white/15 shadow-2xl"
-          >
-            {SLIDE_TABS.map((tab) => {
-              const isCurrent = activeSlide === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => goToSlide(tab.id)}
-                  aria-current={isCurrent ? "true" : undefined}
-                  className={`relative overflow-hidden px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium tracking-tight transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                    isCurrent
-                      ? "bg-white text-black shadow-sm"
-                      : "text-neutral-300 hover:text-white"
-                  }`}
-                >
-                  <span className="relative z-10 flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono text-neutral-500">
-                      0{tab.id + 1}
-                    </span>
-                    <span>{tab.label}</span>
-                  </span>
-
-                  {isCurrent && !isPaused && (
-                    <span
-                      className="absolute bottom-0 left-0 h-[2.5px] bg-(--primary-clr) transition-[width] duration-75 ease-linear"
-                      style={{ width: `${timerProgress}%` }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </main>
-
-      {/* Client Logo Marquee */}
-      <div className="w-full mt-6 lg:mt-8 overflow-hidden lg:overflow-visible">
-        <Marquee
-          items={CLIENT_LOGOS}
-          speed={24}
-          direction="left"
-          slowOnHover={true}
-          fadeEdges={true}
-        />
-      </div>
-    </section>
-  );
 }
