@@ -5,11 +5,20 @@ import FloatingTextSection from "@/components/sections/FloatingTextSection";
 import WhatsHappeningSection from "@/components/sections/WhatsHappeningSection";
 import ResultsShowcaseSection from "@/components/sections/ResultsShowcaseSection";
 import FaqSection from "@/components/sections/FaqSection";
+import { FloatingVideo } from "@/components/ui/FloatingVideo";
+import PortraitHeroSlide from "@/components/sections/PortraitHero";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-(--bg) flex flex-col items-center justify-center overflow-x-hidden">
+      <PortraitHeroSlide />
       <Hero />
+      <FloatingVideo
+        src="/videos/p3.mp4"
+        poster="/images/img1.jpg"
+        title="Watch our story"
+        position="bottom-right"
+      />
       <About />
       <ServiceSection />
       <FloatingTextSection

@@ -84,9 +84,9 @@ const CLIENT_LOGOS: MarqueeItem[] = [
  */
 export default function Hero() {
     return (
-        <section className="h-fit w-full box-border flex flex-col items-start px-5 py-8 sm:px-8 sm:py-10 md:px-12 lg:px-20 lg:py-16">
+        <section className="h-fit relative w-full box-border flex flex-col items-start px-5 py-8 sm:px-8 sm:py-10 md:px-12 lg:px-20 lg:py-16">
             <h1 className="text-black text-3xl tracking-tight  h-fit w-full font-semibold">Pakharsangave<span className="text-(--primary-clr) text-5xl">.</span></h1>
-            <main className="h-auto w-full pt-10 pb-6 sm:pt-12 md:mt-4 lg:mt-4 lg:h-screen lg:pt-20 lg:pb-0">
+            <main id="hero" className="h-auto w-full pt-10 pb-6 sm:pt-12 md:mt-4 lg:mt-4 lg:h-screen lg:pt-20 lg:pb-0">
                 <h2 className="text-black min-h-fit text-[10vw] leading-[1.15] lg:text-[7.8em] lg:leading-15 whitespace-normal tracking-tight font-semibold">
                     I run {" "}
                     <span className="inline-flex items-center align-middle mx-1.5 my-1 sm:mx-2 lg:mx-3 lg:my-2">
