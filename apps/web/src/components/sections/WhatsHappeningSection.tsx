@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import gsap from "gsap";
+import {
+  INDUSTRY_UPDATES,
+  type IndustryUpdateItem,
+} from "@/data/Updates";
 
 export interface ArticleItem {
   id: string;
@@ -21,70 +26,50 @@ export interface WhatsHappeningProps {
   className?: string;
 }
 
-const DEFAULT_ARTICLES: ArticleItem[] = [
-  {
-    id: "elevate-chromebook-uk",
-    dateLabel: "October. 2026",
-    title: "elevate.io joins Google Chromebook Perks in the UK",
-    imageUrl:
-      "/images/img6.jpg",
-    imageAlt: "Video editing and creative workflow dashboard interface",
-    href: "#article-elevate-chromebook",
-    tags: ["SEO", "PPC"],
-  },
-  {
-    id: "marino-muse-seo",
-    dateLabel: "July. 2026",
-    title: "Marino appointed as SEO agency for MUSE",
-    imageUrl:
-      "/images/img7.jpg",
-    imageAlt: "Editorial outdoor portrait by natural water in greenery",
-    href: "#article-marino-muse",
-    tags: ["SEO"],
-  },
-  {
-    id: "global-search-architecture",
-    dateLabel: "June. 2026",
-    title: "Scaling organic search authority across multi-region markets",
-    imageUrl:
-      "/images/img8.jpg",
-    imageAlt: "Evening stadium lights and live broadcast production",
-    href: "#article-global-search",
-    tags: ["SEO", "CONTENT"],
-  },
-  {
-    id: "paid-media-precision",
-    dateLabel: "May. 2026",
-    title: "High-intent acquisition systems built for measurable ROAS",
-    imageUrl:
-      "/images/img9.jpg",
-    imageAlt: "Analytics workspace and performance metrics display",
-    href: "#article-paid-media",
-    tags: ["PPC", "ANALYTICS"],
-  },
-];
+function mapUpdateToArticle(
+  entry: IndustryUpdateItem,
+  index: number
+): ArticleItem {
+  const anyEntry = entry as IndustryUpdateItem & {
+    heroImage?: string;
+    version?: string;
+  };
+
+  const imageUrl =
+    anyEntry.heroImage ||
+    entry.media.poster ||
+    (entry.media.type === "image" ? entry.media.src : undefined) ||
+    `/images/img${(index % 4) + 6}.jpg`;
+
+  const imageAlt = entry.media.alt || `${entry.title} — ${entry.category}`;
+  const href = `/updates#${entry.slug}`;
+  const tags = [
+    entry.category.toUpperCase(),
+    ...(anyEntry.version ? [anyEntry.version.toUpperCase()] : []),
+  ];
+
+  return {
+    id: entry.id,
+    dateLabel: entry.date,
+    title: entry.title,
+    imageUrl,
+    imageAlt,
+    href,
+    tags,
+  };
+}
+
+const UPDATE_ARTICLES: ArticleItem[] = INDUSTRY_UPDATES.map(mapUpdateToArticle);
 
 /** `lg` (1024px+) keeps the original carousel maths exactly; below it we use phone/tablet maths. */
 const isDesktopViewport = () =>
   typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches;
 
-/*
- * RESPONSIVE STRATEGY
- * -------------------
- * - Every `lg:` class is the ORIGINAL desktop value; >= 1024px is unchanged.
- * - Below lg the section sizes to its content (a 100vh box clipped the cards
- *   on short / landscape phones).
- * - Phones previously had NO way to reach cards 2-4 (the Next button is
- *   hidden under 640px and the track isn't natively scrollable). Added:
- *     * touch swipe with snap + rubber-band (touch/pen only, mouse is untouched)
- *     * a prev / counter / next row under the carousel on phones
- * - Below lg, snapping keeps the left padding instead of going edge-flush.
- */
 export default function WhatsHappeningSection({
   heading = "What’s happening?",
-  viewAllLabel = "View all articles",
-  viewAllHref = "/articles",
-  articles = DEFAULT_ARTICLES,
+  viewAllLabel = "View all updates",
+  viewAllHref = "/updates",
+  articles = UPDATE_ARTICLES,
   className = "",
 }: WhatsHappeningProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -121,8 +106,6 @@ export default function WhatsHappeningSection({
     const track = trackRef.current;
     if (!viewport || !track) return;
 
-    // Desktop: original formula. Below lg: the last card stops at the right
-    // padding (instead of touching the screen edge).
     let visibleWidth = viewport.clientWidth;
     if (!isDesktopViewport()) {
       const cs = getComputedStyle(viewport);
@@ -143,10 +126,7 @@ export default function WhatsHappeningSection({
   /** Track offset that brings `card` into its resting position. */
   const getSnapOffset = useCallback((card: HTMLElement) => {
     const track = trackRef.current;
-    if (isDesktopViewport() || !track) return -card.offsetLeft; // original behaviour
-    // Phones / tablets: measure from the track itself so the card lands
-    // against the left padding. Both rects carry the same translation, so
-    // the difference is independent of the current scroll position.
+    if (isDesktopViewport() || !track) return -card.offsetLeft;
     return -(card.getBoundingClientRect().left - track.getBoundingClientRect().left);
   }, []);
 
@@ -176,7 +156,6 @@ export default function WhatsHappeningSection({
     const nextIdx = (activeIndexRef.current + 1) % cards.length;
     const targetCard = cards[nextIdx];
 
-    // If we're already at the end and wrap around, reset smoothly to start
     if (Math.abs(currentOffsetRef.current) >= maxOffsetRef.current - 4 && nextIdx === 0) {
       commitIndex(0);
       animateTrackTo(0);
@@ -203,7 +182,6 @@ export default function WhatsHappeningSection({
   /* ---------------------- touch swipe ---------------------- */
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Mouse behaviour is deliberately untouched (desktop stays button-driven).
     if (e.pointerType === "mouse") return;
     const d = dragRef.current;
     d.pointerId = e.pointerId;
@@ -217,7 +195,6 @@ export default function WhatsHappeningSection({
     const track = trackRef.current;
     if (!track || e.pointerType === "mouse" || e.pointerId !== d.pointerId) return;
 
-    // Decide whether this gesture is horizontal (ours) or vertical (page scroll)
     if (d.axis === null) {
       const dx = e.clientX - d.startX;
       const dy = e.clientY - d.startY;
@@ -242,13 +219,13 @@ export default function WhatsHappeningSection({
     const raw = d.startOffset + (e.clientX - d.startX);
     const max = maxOffsetRef.current;
     let next = raw;
-    if (raw > 0) next = raw * 0.35; // rubber-band past the first card
-    else if (raw < -max) next = -max + (raw + max) * 0.35; // ...and past the last
+    if (raw > 0) next = raw * 0.35;
+    else if (raw < -max) next = -max + (raw + max) * 0.35;
 
     gsap.set(track, { x: next, force3D: true });
 
     const dt = e.timeStamp - d.lastT;
-    if (dt > 0) d.velocity = (e.clientX - d.lastX) / dt; // px per ms
+    if (dt > 0) d.velocity = (e.clientX - d.lastX) / dt;
     d.lastX = e.clientX;
     d.lastT = e.timeStamp;
   };
@@ -285,7 +262,6 @@ export default function WhatsHappeningSection({
       }
     });
 
-    // A deliberate short flick should still move one card
     const dragged = e.clientX - d.startX;
     if (best === activeIndexRef.current && Math.abs(dragged) > 40) {
       best = Math.min(cards.length - 1, Math.max(0, best + (dragged < 0 ? 1 : -1)));
@@ -294,7 +270,6 @@ export default function WhatsHappeningSection({
     commitIndex(best);
     animateTrackTo(targets[best]);
 
-    // Swallow the click that follows a swipe so it doesn't open an article
     window.setTimeout(() => {
       suppressClickRef.current = false;
     }, 60);
@@ -344,7 +319,6 @@ export default function WhatsHappeningSection({
   }, [computeBounds, articles.length]);
 
   const handleCardHover = (index: number, entering: boolean) => {
-    // Touch screens emulate mouseenter on tap, which would leave cards stuck zoomed
     if (!window.matchMedia("(hover: hover)").matches) return;
 
     const card = cardRefs.current[index];
@@ -394,7 +368,7 @@ export default function WhatsHappeningSection({
         </div>
 
         <div className="wh-header-reveal mt-3 pl-7">
-          <a
+          <Link
             href={viewAllHref}
             className="group inline-flex items-center gap-2.5 text-sm sm:text-[15px] font-medium text-lime-300 hover:text-lime-600 transition-colors duration-200"
           >
@@ -412,7 +386,7 @@ export default function WhatsHappeningSection({
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -441,6 +415,13 @@ export default function WhatsHappeningSection({
                 onMouseLeave={() => handleCardHover(idx, false)}
                 className="wh-card-reveal group relative shrink-0 w-[86vw] sm:w-[48vw] lg:w-[46.5vw] aspect-4/5 sm:aspect-16/10 rounded-[20px] sm:rounded-3xl overflow-hidden bg-[#111315] border border-white/6"
               >
+                {/* Full-card link so clicking anywhere on the update opens it */}
+                <Link
+                  href={article.href}
+                  aria-label={`Open update: ${article.title}`}
+                  className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300"
+                />
+
                 {/* Background Image */}
                 <img
                   src={article.imageUrl}
@@ -458,7 +439,7 @@ export default function WhatsHappeningSection({
                 />
 
                 {/* Card Content Overlay */}
-                <div className="relative z-10 flex h-full w-full flex-col justify-between p-5 sm:p-7 lg:p-8">
+                <div className="pointer-events-none relative z-20 flex h-full w-full flex-col justify-between p-5 sm:p-7 lg:p-8">
                   {/* Top Timestamp */}
                   <div className="flex items-center justify-between">
                     <time className="text-xs sm:text-[13px] font-normal tracking-wide text-white/90">
@@ -468,20 +449,12 @@ export default function WhatsHappeningSection({
 
                   {/* Bottom Headline, Read Link & Tag Pills */}
                   <div className="flex flex-col items-start">
-                    <a
-                      href={article.href}
-                      className="block max-w-136 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 rounded-sm"
-                    >
-                      <h3 className="text-xl sm:text-2xl lg:text-[2rem] font-medium leading-[1.15] tracking-[-0.02em] text-white">
-                        {article.title}
-                      </h3>
-                    </a>
+                    <h3 className="max-w-136 text-xl sm:text-2xl lg:text-[2rem] font-medium leading-[1.15] tracking-[-0.02em] text-white">
+                      {article.title}
+                    </h3>
 
-                    <a
-                      href={article.href}
-                      className="mt-3 inline-flex items-center gap-2.5 text-xs sm:text-sm font-normal text-white/85 hover:text-white transition-colors"
-                    >
-                      <span>Read article</span>
+                    <span className="mt-3 inline-flex items-center gap-2.5 text-xs sm:text-sm font-normal text-white/85 group-hover:text-lime-300 transition-colors">
+                      <span>Read update</span>
                       <span
                         data-read-arrow
                         aria-hidden="true"
@@ -500,7 +473,7 @@ export default function WhatsHappeningSection({
                           />
                         </svg>
                       </span>
-                    </a>
+                    </span>
 
                     {/* Category Pills */}
                     {article.tags.length > 0 && (
@@ -526,7 +499,7 @@ export default function WhatsHappeningSection({
         <button
           type="button"
           onClick={handleNext}
-          aria-label="Next article"
+          aria-label="Next update"
           data-can-scroll={canScrollNext}
           className="hidden sm:flex items-center justify-center absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 z-30 h-11 w-11 lg:h-12 lg:w-12 rounded-full bg-lime-300 hover:bg-lime-600 active:scale-95 text-[#070808] shadow-[0_10px_30px_rgba(0,0,0,0.45)] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
@@ -546,12 +519,12 @@ export default function WhatsHappeningSection({
         </button>
       </div>
 
-      {/* Phone-only controls (hidden from 640px up, where the floating button takes over) */}
+      {/* Phone-only controls */}
       <div className="mt-6 flex items-center gap-4 px-5 sm:hidden">
         <button
           type="button"
           onClick={handlePrev}
-          aria-label="Previous article"
+          aria-label="Previous update"
           className="flex h-11 w-11 items-center justify-center rounded-full bg-lime-300 text-[#070808] active:scale-95 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <svg
@@ -579,7 +552,7 @@ export default function WhatsHappeningSection({
         <button
           type="button"
           onClick={handleNext}
-          aria-label="Next article"
+          aria-label="Next update"
           className="flex h-11 w-11 items-center justify-center rounded-full bg-lime-300 text-[#070808] active:scale-95 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <svg

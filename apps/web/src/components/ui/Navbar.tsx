@@ -29,32 +29,25 @@ interface NavItem {
   featured?: FeaturedPreview[];
 }
 
-
-
-const services = Object.values(SERVICES)
-const products = Object.values(PRODUCTS)
-const caseStudies = Object.values(CASE_STUDIES)
-
+const services = Object.values(SERVICES);
+const products = Object.values(PRODUCTS);
+const caseStudies = Object.values(CASE_STUDIES);
 
 const NAV_ITEMS: NavItem[] = [
   {
-    label: "About",
-    href: "/#about",
-  },
-  {
     label: "Resources",
-    href: "/resources",
+    href: "/learn/free-resources",
     subItems: [
-      { label: "Open Vault", href: "/learn" },
+      { label: "Open Vault", href: "/learn/free-resources" },
       { label: "Pro Playbooks", href: "/learn" },
-      { label: "Month in a Nutshell", href: "/resources/month-in-a-nutshell" },
+      { label: "Month in a Nutshell", href: "/updates" },
       { label: "Blogs", href: "/blog" },
     ],
     featured: [
       {
         title: "How A Catchy Line Started A Cultural Conversation",
         image: products[0].previews[0].src,
-        href: "/learn",
+        href: "/learn/free-resources",
       },
       {
         title: "Sharpest Moment Marketing Breakdown & Strategy",
@@ -62,6 +55,10 @@ const NAV_ITEMS: NavItem[] = [
         href: "/learn",
       },
     ],
+  },
+    {
+    label: "Testimonials",
+    href: "/testimonials",
   },
   {
     label: "Services",
@@ -85,7 +82,7 @@ const NAV_ITEMS: NavItem[] = [
       },
     ],
   },
-    {
+  {
     label: "Work",
     href: "/case-studies",
     subItems: [{ label: "Case Studies", href: "/case-studies" }],
@@ -429,7 +426,7 @@ export function Navbar() {
           ref={mobilePanelRef}
           style={{ height: 0, opacity: 0, visibility: "hidden" }}
           aria-hidden={!mobileOpen}
-          className="pointer-events-auto w-full sm:max-w-sm overflow-hidden rounded-4xl bg-white/90 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10"
+          className="pointer-events-auto w-full sm:max-w-sm max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain rounded-4xl bg-white/95 backdrop-blur-md text-zinc-900 shadow-2xl shadow-black/10"
         >
           <div className="p-2.5">
             <ul className="flex flex-col">
@@ -474,24 +471,53 @@ export function Navbar() {
                           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                         }`}
                       >
-                        <ul
+                        <div
                           aria-hidden={!isExpanded}
                           className="min-h-0 overflow-hidden"
                         >
-                          {item.subItems!.map((sub) => (
-                            <li key={sub.label}>
-                              <Link
-                                href={sub.href}
-                                onClick={closeMobile}
-                                tabIndex={isExpanded ? 0 : -1}
-                                className="flex items-center gap-2 rounded-full py-2.5 pl-9 pr-5 text-sm text-zinc-600 transition-colors active:bg-zinc-200/60 active:text-zinc-950"
-                              >
-                                <ArrowRight className="h-3.5 w-3.5 text-zinc-500" />
-                                <span>{sub.label}</span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                          <ul className="flex flex-col">
+                            {item.subItems!.map((sub) => (
+                              <li key={sub.label}>
+                                <Link
+                                  href={sub.href}
+                                  onClick={closeMobile}
+                                  tabIndex={isExpanded ? 0 : -1}
+                                  className="flex items-center gap-2 rounded-full py-2.5 pl-9 pr-5 text-sm text-zinc-600 transition-colors active:bg-zinc-200/60 active:text-zinc-950"
+                                >
+                                  <ArrowRight className="h-3.5 w-3.5 text-zinc-500" />
+                                  <span>{sub.label}</span>
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+
+                          {item.featured && item.featured.length > 0 && (
+                            <div className="grid grid-cols-2 gap-2.5 px-4 pt-2 pb-3">
+                              {item.featured.map((card) => (
+                                <Link
+                                  key={card.title}
+                                  href={card.href}
+                                  onClick={closeMobile}
+                                  tabIndex={isExpanded ? 0 : -1}
+                                  className="group/mcard flex flex-col gap-1.5 rounded-2xl bg-zinc-100/80 p-2 transition-colors active:bg-zinc-200/70"
+                                >
+                                  <div className="relative aspect-16/10 w-full overflow-hidden rounded-xl bg-zinc-200">
+                                    <Image
+                                      src={card.image}
+                                      alt={card.title}
+                                      fill
+                                      sizes="(max-width: 640px) 45vw, 180px"
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <p className="text-[11px] font-medium leading-snug text-zinc-800 line-clamp-2">
+                                    {card.title}
+                                  </p>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </li>
