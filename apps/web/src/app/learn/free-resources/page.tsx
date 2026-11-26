@@ -9,6 +9,8 @@ import {
   type FreeResourceCategory,
 } from "@/data/FreeResources";
 
+import { FloatingVideo } from "@/components/ui/FloatingVideo";
+
 const CATEGORIES: FreeResourceCategory[] = [
   "All",
   "Starter Kits",
@@ -36,6 +38,12 @@ export default function FreeResourcesPage() {
 
   return (
     <main className="min-h-screen w-full max-lg:overflow-x-clip bg-(--bg) text-neutral-900 selection:bg-lime-300 selection:text-black">
+      <FloatingVideo
+        src="/videos/p3.mp4"
+        poster="/images/img1.jpg"
+        title="Watch our story"
+        position="bottom-left"
+      />
       <div className="max-w-7xl mx-auto px-5 sm:px-12 lg:px-20 pt-10 sm:pt-16 pb-16 sm:pb-24 flex flex-col gap-10 sm:gap-18">
         {/* 1. EDITORIAL HEADER */}
         <header className="flex flex-col gap-6">

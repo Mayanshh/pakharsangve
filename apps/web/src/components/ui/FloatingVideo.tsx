@@ -15,7 +15,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
 /* -------------------------------------------------------------------------- */
-/*  Types                                                                     */
+/*  Types & Constants                                                         */
 /* -------------------------------------------------------------------------- */
 
 type Mode = "mini" | "max";
@@ -28,34 +28,28 @@ export interface FloatingVideoProps {
   poster?: string;
   /** Accessible name for the player (also shown top-left when maximized). */
   title?: string;
-  /** CSS selector of the hero section. The player appears once it leaves the viewport. */
+  /** CSS selector of the hero section. Appears once it leaves view (or immediately if absent). */
   heroSelector?: string;
   /** width / height of the video. 16/9 for landscape, 9/16 for portrait. */
   aspectRatio?: number;
   /** Width of the minimized player in px (auto-shrinks on small screens). */
   miniWidth?: number;
+  /** Horizontal alignment when minimized. */
   position?: Position;
   /** Gap between the minimized player and the viewport edge, in px. */
   edgeOffset?: number;
-  /** Unmute automatically when the user maximizes (a user gesture, so allowed). */
+  /** Unmute automatically when the user maximizes (user gesture allowed). */
   unmuteOnMaximize?: boolean;
   /** Show a close button on the minimized player. */
   dismissible?: boolean;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Helpers                                                                   */
-/* -------------------------------------------------------------------------- */
-
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-const TRANSFORM_ORIGIN: Record<Position, string> = {
-  "bottom-right": "95% 95%",
-  "bottom-left": "5% 95%",
-  center: "50% 95%",
-};
+interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 interface RectOptions {
   aspectRatio: number;
@@ -64,8 +58,21 @@ interface RectOptions {
   edgeOffset: number;
 }
 
-/** Pixel geometry (x, y, width, height) of the player for a given mode. */
-function computeRect(mode: Mode, o: RectOptions) {
+const TRANSFORM_ORIGIN: Record<Position, string> = {
+  "bottom-right": "95% 95%",
+  "bottom-left": "5% 95%",
+  center: "50% 95%",
+};
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* -------------------------------------------------------------------------- */
+/*  Geometry Helper                                                           */
+/* -------------------------------------------------------------------------- */
+
+function computeRect(mode: Mode, o: RectOptions): Rect {
   const vw = document.documentElement.clientWidth;
   const vh = window.innerHeight;
 
@@ -74,71 +81,152 @@ function computeRect(mode: Mode, o: RectOptions) {
     let width = Math.min(vw - gutter * 2, 1040);
     let height = width / o.aspectRatio;
     const maxHeight = vh * 0.86;
+
     if (height > maxHeight) {
       height = maxHeight;
       width = height * o.aspectRatio;
     }
-    return { x: (vw - width) / 2, y: (vh - height) / 2, width, height };
+
+    return {
+      x: (vw - width) / 2,
+      y: (vh - height) / 2,
+      width,
+      height,
+    };
   }
 
   const edge = vw < 640 ? Math.min(o.edgeOffset, 12) : o.edgeOffset;
   const width = Math.min(o.miniWidth, vw * 0.45);
   const height = width / o.aspectRatio;
 
-  // if (o.position === "center") {
-  //   return {
-  //     x: (vw - width) / 2,
-  //     y: (vh - height) / 2,
-  //     width,
-  //     height,
-  //   };
-  // }
-
-  if (o.position === "center") {
-    return {
-      x: (vw - width) / 2,
-      y: vh - height - edge,
-      width,
-      height,
-    };
-  }
+  const x =
+    o.position === "center"
+      ? (vw - width) / 2
+      : o.position === "bottom-left"
+      ? edge
+      : vw - width - edge;
 
   return {
-    x: o.position === "bottom-left" ? edge : vw - width - edge,
+    x,
     y: vh - height - edge,
     width,
     height,
   };
 }
 
-/** True while the hero section is completely out of the viewport. */
-function useHeroOutOfView(selector: string) {
+/* -------------------------------------------------------------------------- */
+/*  Hooks                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Tracks whether the player is cleared to show:
+ * - If `selector` exists on the current route: `true` only once scrolled out of view.
+ * - If `selector` does NOT exist on the current route: `true` immediately.
+ */
+function useHeroCleared(selector: string) {
   const pathname = usePathname();
-  const [state, setState] = useState<{ key: string; outOfView: boolean }>({
+  const [state, setState] = useState<{ key: string; cleared: boolean }>({
     key: "",
-    outOfView: false,
+    cleared: false,
   });
 
   const key = `${pathname}::${selector}`;
 
   useEffect(() => {
-    const hero = document.querySelector(selector);
-    if (!hero) return;
+    let io: IntersectionObserver | null = null;
+    let mo: MutationObserver | null = null;
+    let observedHero: Element | null = null;
 
-    const io = new IntersectionObserver(
-      ([entry]) =>
-        setState({ key, outOfView: !entry.isIntersecting }),
-      { threshold: 0 }
-    );
-    io.observe(hero);
-    return () => io.disconnect();
+    const attachObserver = (hero: Element) => {
+      if (observedHero === hero) return;
+      observedHero = hero;
+      io?.disconnect();
+      io = new IntersectionObserver(
+        ([entry]) => {
+          setState({ key, cleared: !entry.isIntersecting });
+        },
+        { threshold: 0 }
+      );
+      io.observe(hero);
+    };
+
+    const existingHero = document.querySelector(selector);
+    if (existingHero) {
+      attachObserver(existingHero);
+    } else {
+      // Page has no matching hero section -> allow floating player immediately
+      setState({ key, cleared: true });
+
+      // Watch briefly in case a client-rendered hero mounts right after navigation
+      mo = new MutationObserver(() => {
+        const lateHero = document.querySelector(selector);
+        if (lateHero) {
+          mo?.disconnect();
+          attachObserver(lateHero);
+        }
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => {
+      io?.disconnect();
+      mo?.disconnect();
+    };
   }, [selector, pathname, key]);
 
-  return state.key === key ? state.outOfView : false;
+  return state.key === key ? state.cleared : false;
+}
+
+/** Traps focus inside `containerRef` and handles Escape key when `active`. */
+function useModalFocusTrap(
+  active: boolean,
+  containerRef: React.RefObject<HTMLElement | null>,
+  onEscape: () => void
+) {
+  useEffect(() => {
+    if (!active) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onEscape();
+        return;
+      }
+      if (e.key !== "Tab" || !containerRef.current) return;
+
+      const focusable = Array.from(
+        containerRef.current.querySelectorAll<HTMLElement>("button, input")
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const current = document.activeElement;
+
+      if (e.shiftKey && current === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && current === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!focusable.includes(current as HTMLElement)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [active, containerRef, onEscape]);
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Small building blocks                                                     */
+/*  Subcomponents                                                             */
 /* -------------------------------------------------------------------------- */
 
 function IconButton({
@@ -174,7 +262,7 @@ function IconButton({
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Component                                                                 */
+/*  Main Component                                                            */
 /* -------------------------------------------------------------------------- */
 
 export function FloatingVideo({
@@ -190,15 +278,16 @@ export function FloatingVideo({
   dismissible = true,
 }: FloatingVideoProps) {
   const pathname = usePathname();
-  const heroOut = useHeroOutOfView(heroSelector);
+  const heroCleared = useHeroCleared(heroSelector);
 
   const [mode, setMode] = useState<Mode>("mini");
   const [muted, setMuted] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
   const [dismissedPath, setDismissedPath] = useState<string | null>(null);
 
-  const isDismissed = dismissed && dismissedPath === pathname;
+  const isDismissed = dismissedPath === pathname;
+  const isMax = mode === "max";
+  const shown = (heroCleared && !isDismissed) || isMax;
 
   const boxRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -214,9 +303,8 @@ export function FloatingVideo({
   const visibilityReady = useRef(false);
   const userPaused = useRef(false);
   const prevMode = useRef<Mode>("mini");
-
-  const isMax = mode === "max";
-  const shown = (heroOut && !isDismissed) || isMax;
+  const modeRef = useRef<Mode>("mini");
+  modeRef.current = mode;
 
   const getRect = useCallback(
     (m: Mode) =>
@@ -224,31 +312,38 @@ export function FloatingVideo({
     [aspectRatio, miniWidth, position, edgeOffset]
   );
 
+  /* ---------------- route change cleanup ---------------- */
+
+  useEffect(() => {
+    setMode("mini");
+  }, [pathname]);
+
   /* ---------------- actions ---------------- */
 
-  const dismiss = () => {
-    setDismissed(true);
+  const dismiss = useCallback(() => {
     setDismissedPath(pathname);
-  };
+  }, [pathname]);
 
-  const maximize = () => {
+  const maximize = useCallback(() => {
     if (unmuteOnMaximize && videoRef.current) {
       videoRef.current.muted = false;
       setMuted(false);
     }
     setMode("max");
-  };
+  }, [unmuteOnMaximize]);
 
-  const minimize = () => setMode("mini");
+  const minimize = useCallback(() => {
+    setMode("mini");
+  }, []);
 
-  const toggleMute = () => {
+  const toggleMute = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
     v.muted = !v.muted;
     setMuted(v.muted);
-  };
+  }, []);
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) {
@@ -258,9 +353,9 @@ export function FloatingVideo({
       userPaused.current = true;
       v.pause();
     }
-  };
+  }, []);
 
-  const syncProgress = () => {
+  const syncProgress = useCallback(() => {
     const v = videoRef.current;
     if (!v || !v.duration) return;
     const ratio = v.currentTime / v.duration;
@@ -270,16 +365,19 @@ export function FloatingVideo({
     if (seekRef.current) {
       seekRef.current.value = String(ratio * 1000);
     }
-  };
+  }, []);
 
-  const seek = (value: number) => {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
-    v.currentTime = (value / 1000) * v.duration;
-    syncProgress();
-  };
+  const seek = useCallback(
+    (value: number) => {
+      const v = videoRef.current;
+      if (!v || !v.duration) return;
+      v.currentTime = (value / 1000) * v.duration;
+      syncProgress();
+    },
+    [syncProgress]
+  );
 
-  /* ---------------- geometry: mini <-> max ---------------- */
+  /* ---------------- geometry animation: mini <-> max ---------------- */
 
   useGSAP(
     () => {
@@ -312,7 +410,7 @@ export function FloatingVideo({
     { dependencies: [mode, getRect] }
   );
 
-  /* ---------------- entrance / exit ---------------- */
+  /* ---------------- entrance / exit animation ---------------- */
 
   useGSAP(
     () => {
@@ -349,10 +447,7 @@ export function FloatingVideo({
     { dependencies: [shown] }
   );
 
-  /* ---------------- keep geometry correct on resize ---------------- */
-
-  const modeRef = useRef(mode);
-  modeRef.current = mode;
+  /* ---------------- viewport resize sync ---------------- */
 
   useEffect(() => {
     let raf = 0;
@@ -371,7 +466,7 @@ export function FloatingVideo({
     };
   }, [getRect]);
 
-  /* ---------------- play only while visible (respects manual pause) ---------------- */
+  /* ---------------- playback sync with visibility ---------------- */
 
   useEffect(() => {
     const v = videoRef.current;
@@ -383,47 +478,9 @@ export function FloatingVideo({
     }
   }, [shown]);
 
-  /* ---------------- maximized: scroll lock, Esc, focus handling ---------------- */
+  /* ---------------- modal accessibility & focus ---------------- */
 
-  useEffect(() => {
-    if (!isMax) return;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setMode("mini");
-        return;
-      }
-      if (e.key !== "Tab" || !maxOverlayRef.current) return;
-
-      const focusable = Array.from(
-        maxOverlayRef.current.querySelectorAll<HTMLElement>("button, input")
-      );
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement;
-
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      } else if (!focusable.includes(active as HTMLElement)) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isMax]);
+  useModalFocusTrap(isMax, maxOverlayRef, minimize);
 
   useEffect(() => {
     if (mode === "max") {
@@ -440,19 +497,19 @@ export function FloatingVideo({
 
   return (
     <>
-      {/* Backdrop (only visible when maximized) */}
+      {/* Backdrop (visible only when maximized) */}
       <div
         ref={backdropRef}
         onClick={minimize}
         aria-hidden
         style={{ opacity: 0, visibility: "hidden" }}
-        className="fixed inset-0 z-[69] bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 z-69 bg-black/70 backdrop-blur-sm"
       />
 
       {/* Positioned box: GSAP animates x / y / width / height */}
       <div
         ref={boxRef}
-        className={`fixed left-0 top-0 ${isMax ? "z-[70]" : "z-40"}`}
+        className={`fixed left-0 top-0 ${isMax ? "z-70" : "z-40"}`}
       >
         {/* Card: GSAP animates entrance / exit */}
         <div

@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-(--bg) flex flex-col items-center justify-center overflow-x-hidden">
       <PortraitHeroSlide />
-      <Hero />
+      {/* <Hero /> */}
       <FloatingVideo
         src="/videos/p3.mp4"
         poster="/images/img1.jpg"
@@ -32,6 +32,7 @@ export default function Home() {
       <WhatsHappeningSection />
       <ResultsShowcaseSection />
       <FaqSection />
+      <Hero />
     </main>
   );
 }

@@ -76,7 +76,7 @@ export default function AboutSection() {
           ,{" "}
           <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             sharp strategists
-          </span>
+        </span>
           , and{" "}
           <span className="inline sm:inline-block box-decoration-clone px-3.5 py-0.5 mx-1 bg-lime-300 rounded-full">
             technical pros
